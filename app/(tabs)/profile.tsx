@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { C } from '@/src/constants/theme';
@@ -12,7 +12,17 @@ export default function Profile() {
   useEffect(() => { setFirstName(driver?.firstName ?? ''); setLastName(driver?.lastName ?? ''); setPhone(driver?.phone ?? ''); }, [driver]);
 
   const save = async () => { setSaving(true); const error = await saveProfile({ firstName, lastName, phone }); setSaving(false); Alert.alert(error ? 'Could not save profile' : 'Profile saved', error ?? 'Your personal details have been updated.'); };
-  const logout = () => Alert.alert('Sign out?', 'You will need your email and password to sign in again.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Sign out', style: 'destructive', onPress: async () => { await signOut(); router.replace('/auth' as any); } }]);
+  const completeLogout = async () => { await signOut(); router.replace('/auth' as any); };
+  const logout = () => {
+    if (Platform.OS === 'web') {
+      if (window.confirm('Sign out? You will need your email and password to sign in again.')) void completeLogout();
+      return;
+    }
+    Alert.alert('Sign out?', 'You will need your email and password to sign in again.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Sign out', style: 'destructive', onPress: completeLogout },
+    ]);
+  };
 
   return <ScrollView contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled">
     <ScreenTitle eyebrow="PROFILE" title="Your driver account." />
