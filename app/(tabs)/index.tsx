@@ -2,14 +2,15 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View, Pressable } from 'r
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { C } from '@/src/constants/theme';
-import { Card, Pill } from '@/src/components/ui';
+import { Card, StatusPill } from '@/src/components/ui';
 import { useApp } from '@/src/context/AppContext';
 
 export default function Home() {
   const { driver, campaigns, refreshing, refresh } = useApp();
-  const active = campaigns.find(c => c.status === 'active');
+  const active = campaigns.find(c => c.status === 'active' || c.status === 'accepted' || c.status === 'review');
   const invited = campaigns.find(c => c.status === 'invited');
-  const pending = campaigns.filter(c => c.status !== 'complete' && c.status !== 'declined').reduce((sum, c) => sum + c.pay, 0);
+  const potential = campaigns.filter(c => c.status === 'invited').reduce((sum, c) => sum + c.pay, 0);
+  const upcoming = campaigns.filter(c => c.status === 'accepted' || c.status === 'active' || c.status === 'review').reduce((sum, c) => sum + c.pay, 0);
   const firstName = driver?.name ?? 'Driver';
 
   return (
@@ -21,7 +22,7 @@ export default function Home() {
 
       {active ? (
         <Card style={styles.hero}>
-          <View style={styles.heroTop}><Pill tone="green">LIVE CAMPAIGN</Pill><Ionicons name="radio" size={22} color={C.violet} /></View>
+          <View style={styles.heroTop}><StatusPill status={active.status} /><Ionicons name="radio" size={22} color={C.violet} /></View>
           <Text style={styles.brand}>{active.brand}</Text><Text style={styles.campaign}>{active.title}</Text>
           <Text style={styles.area}>{active.area} · {active.end}</Text>
           <View style={styles.progress}><View style={[styles.progressFill, { width: `${active.progress}%` }]} /></View>
@@ -33,8 +34,8 @@ export default function Home() {
 
       <Text style={styles.section}>YOUR ACCOUNT</Text>
       <View style={styles.stats}>
-        <Card style={styles.stat}><Text style={styles.statValue}>£{pending.toFixed(0)}</Text><Text style={styles.statLabel}>Potential earnings</Text></Card>
-        <Card style={styles.stat}><Text style={styles.statValue}>{driver?.rating.toFixed(1) ?? '5.0'}</Text><Text style={styles.statLabel}>Driver rating</Text></Card>
+        <Card style={styles.stat}><Text style={styles.statValue}>£{potential.toFixed(0)}</Text><Text style={styles.statLabel}>Potential earnings</Text></Card>
+        <Card style={styles.stat}><Text style={styles.statValue}>£{upcoming.toFixed(0)}</Text><Text style={styles.statLabel}>Upcoming earnings</Text></Card>
       </View>
 
       {invited && <Pressable onPress={() => router.push(`/campaign/${invited.id}`)}><Card style={styles.invite}><View style={styles.inviteIcon}><Ionicons name="sparkles" color={C.gold} size={21} /></View><View style={{ flex: 1 }}><Text style={styles.inviteTop}>NEW INVITATION</Text><Text style={styles.inviteTitle}>{invited.brand}: {invited.title}</Text><Text style={styles.inviteCopy}>Earn £{invited.pay.toFixed(0)} · Starts {invited.start}</Text></View><Ionicons name="chevron-forward" color={C.muted} size={20} /></Card></Pressable>}

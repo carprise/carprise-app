@@ -1,8 +1,9 @@
-export type CampaignStatus = 'invited' | 'active' | 'review' | 'complete' | 'declined';
+export type CampaignStatus = 'invited' | 'accepted' | 'active' | 'review' | 'complete' | 'completed' | 'declined';
 
 export type CampaignTask = {
   label: string;
   done: boolean;
+  progress: number;
 };
 
 export type Campaign = {

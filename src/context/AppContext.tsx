@@ -25,6 +25,7 @@ type Ctx = {
   accept: (assignmentId: string) => Promise<string | null>;
   decline: (assignmentId: string) => Promise<string | null>;
   completeTask: (assignmentId: string, index: number) => Promise<string | null>;
+  setCampaignProgress: (assignmentId: string, progress: number) => Promise<string | null>;
   uploadVehiclePhoto: (uri: string, fileName?: string) => Promise<string | null>;
   uploadEvidence: (assignmentId: string, uri: string, fileName?: string) => Promise<string | null>;
 };
@@ -50,11 +51,11 @@ const formatDate = (date?: string | null) => {
 };
 
 const tasksFor = (status: CampaignStatus, progress: number) => [
-  { label: 'Campaign accepted', done: status !== 'invited' },
-  { label: 'Installation approved', done: progress >= 20 },
-  { label: 'Week one evidence', done: progress >= 45 },
-  { label: 'Week two evidence', done: progress >= 70 },
-  { label: 'Final vehicle check', done: progress >= 100 || status === 'complete' },
+  { label: 'Campaign accepted', done: status !== 'invited' && status !== 'declined', progress: 10 },
+  { label: 'Installation approved', done: progress >= 25, progress: 25 },
+  { label: 'First evidence uploaded', done: progress >= 50, progress: 50 },
+  { label: 'Final evidence uploaded', done: progress >= 75, progress: 75 },
+  { label: 'Final vehicle check complete', done: progress >= 100 || status === 'complete' || status === 'completed', progress: 100 },
 ];
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -270,9 +271,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     refresh: () => loadData(session, true),
     saveProfile,
     saveVehicle,
-    accept: assignmentId => updateAssignment(assignmentId, { status: 'active', progress: 10 }),
+    accept: assignmentId => updateAssignment(assignmentId, { status: 'accepted', progress: 10 }),
     decline: assignmentId => updateAssignment(assignmentId, { status: 'declined' }),
-    completeTask: (assignmentId, index) => updateAssignment(assignmentId, { progress: Math.min(100, [10, 25, 50, 75, 100][index] ?? 100) }),
+    completeTask: (assignmentId, index) => {
+      const progress = Math.min(100, [10, 25, 50, 75, 100][index] ?? 100);
+      const status = progress >= 100 ? 'completed' : progress > 10 ? 'active' : 'accepted';
+      return updateAssignment(assignmentId, { progress, status });
+    },
+    setCampaignProgress: (assignmentId, progress) => {
+      const bounded = Math.max(0, Math.min(100, Math.round(progress / 5) * 5));
+      const status = bounded >= 100 ? 'completed' : bounded > 10 ? 'active' : 'accepted';
+      return updateAssignment(assignmentId, { progress: bounded, status });
+    },
     uploadVehiclePhoto,
     uploadEvidence,
   }), [session, loading, refreshing, driver, vehicle, campaigns, notifications, loadData]);
