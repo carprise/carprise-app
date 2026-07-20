@@ -1,1 +1,22 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'; import {createClient} from '@supabase/supabase-js'; const url=process.env.EXPO_PUBLIC_SUPABASE_URL; const key=process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY; export const supabase=url&&key?createClient(url,key,{auth:{storage:AsyncStorage,autoRefreshToken:true,persistSession:true,detectSessionInUrl:false}}):null; export const backendReady=Boolean(supabase);
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient } from '@supabase/supabase-js';
+
+const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+if (!url || !key) {
+  console.warn('Supabase environment variables are missing. Add the project URL and publishable key to .env.');
+}
+
+export const supabase = url && key
+  ? createClient(url, key, {
+      auth: {
+        storage: AsyncStorage,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+    })
+  : null;
+
+export const backendReady = Boolean(supabase);
