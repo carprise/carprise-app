@@ -8,10 +8,49 @@
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "icon": "./assets/images/icon.png",
-    "splash": {"image":"./assets/images/splash.png","resizeMode":"contain","backgroundColor":"#07080A"},
-    "ios": {"supportsTablet":false,"bundleIdentifier":"co.uk.carprise.driver","infoPlist":{"NSCameraUsageDescription":"Carprise uses your camera to upload vehicle and campaign evidence photos.","NSPhotoLibraryUsageDescription":"Carprise uses your photo library to upload vehicle and campaign evidence photos."}},
-    "android": {"package":"co.uk.carprise.driver","adaptiveIcon":{"foregroundImage":"./assets/images/adaptive-icon.png","backgroundColor":"#07080A"}},
-    "plugins": ["expo-router","expo-secure-store","expo-document-picker",["expo-image-picker",{"photosPermission":"Allow Carprise to access photos for vehicle and campaign evidence."}]],
-    "experiments": {"typedRoutes": true}
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#07080A"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "co.uk.carprise.driver",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Carprise uses your camera to upload vehicle and campaign evidence photos.",
+        "NSPhotoLibraryUsageDescription": "Carprise uses your photo library to upload vehicle and campaign evidence photos.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "co.uk.carprise.driver",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#07080A"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-document-picker",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Carprise to access photos for vehicle and campaign evidence."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8e6b45a5-cc3f-4891-a16e-ae367e1379b5"
+      }
+    }
   }
 }
