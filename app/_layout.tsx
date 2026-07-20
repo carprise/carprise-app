@@ -1,0 +1,1 @@
+import {Stack} from 'expo-router'; import {StatusBar} from 'expo-status-bar'; import {AppProvider} from '@/src/context/AppContext'; export default function Root(){return <AppProvider><StatusBar style="light"/><Stack screenOptions={{headerShown:false,contentStyle:{backgroundColor:'#07080A'},animation:'fade'}}/></AppProvider>}

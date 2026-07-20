@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Carprise Driver",
+    "slug": "carprise-driver",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "carprise",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "icon": "./assets/images/icon.png",
+    "splash": {"image":"./assets/images/splash.png","resizeMode":"contain","backgroundColor":"#07080A"},
+    "ios": {"supportsTablet":false,"bundleIdentifier":"co.uk.carprise.driver","infoPlist":{"NSCameraUsageDescription":"Carprise uses your camera to upload vehicle and campaign evidence photos.","NSPhotoLibraryUsageDescription":"Carprise uses your photo library to upload vehicle and campaign evidence photos."}},
+    "android": {"package":"co.uk.carprise.driver","adaptiveIcon":{"foregroundImage":"./assets/images/adaptive-icon.png","backgroundColor":"#07080A"}},
+    "plugins": ["expo-router","expo-secure-store","expo-document-picker",["expo-image-picker",{"photosPermission":"Allow Carprise to access photos for vehicle and campaign evidence."}]],
+    "experiments": {"typedRoutes": true}
+  }
+}

@@ -1,0 +1,1 @@
+export type CampaignStatus='invited'|'active'|'review'|'complete'; export type Campaign={id:string,brand:string,title:string,status:CampaignStatus,pay:number,start:string,end:string,area:string,progress:number,tasks:{label:string,done:boolean}[]}; export type Driver={name:string,rating:number,vehicle:string,plate:string,verified:boolean};

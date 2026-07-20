@@ -1,0 +1,1 @@
+export const C={bg:'#07080A',panel:'#101216',panel2:'#171A20',text:'#F4F0E8',muted:'#9B9DA4',gold:'#E6C779',gold2:'#B99448',violet:'#8D6DE8',line:'rgba(255,255,255,0.10)',success:'#74D39A',warning:'#F2BB66',danger:'#EE7A7A'}; export const R={sm:12,md:18,lg:26,xl:34};
