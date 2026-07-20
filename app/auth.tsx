@@ -14,6 +14,7 @@ export default function AuthScreen() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [notice, setNotice] = useState('');
 
   const submit = async () => {
     if (!email.trim() || password.length < 6 || (mode === 'signup' && !firstName.trim())) {
@@ -21,15 +22,36 @@ export default function AuthScreen() {
       return;
     }
     setSubmitting(true);
-    const error = mode === 'login'
-      ? await signIn(email, password)
-      : await signUp(email, password, firstName, lastName);
-    setSubmitting(false);
-    if (error) {
-      Alert.alert(mode === 'login' ? 'Could not sign in' : 'Could not create account', error);
+    setNotice('');
+
+    if (mode === 'login') {
+      const error = await signIn(email, password);
+      setSubmitting(false);
+      if (error) {
+        setNotice(error);
+        Alert.alert('Could not sign in', error);
+        return;
+      }
+      router.replace('/(tabs)');
       return;
     }
-    router.replace('/(tabs)');
+
+    const result = await signUp(email, password, firstName, lastName);
+    setSubmitting(false);
+    if (result.error) {
+      setNotice(result.error);
+      Alert.alert('Could not create account', result.error);
+      return;
+    }
+    if (result.signedIn) {
+      setNotice('Account created successfully. Opening your driver dashboard...');
+      router.replace('/(tabs)');
+      return;
+    }
+
+    setNotice('Your account has been created. Check your email to confirm it, then return here and sign in.');
+    setMode('login');
+    setPassword('');
   };
 
   return (
@@ -59,6 +81,7 @@ export default function AuthScreen() {
           <Text style={styles.label}>Password</Text>
           <TextInput value={password} onChangeText={setPassword} style={styles.input} placeholder="At least 6 characters" placeholderTextColor="#666A72" secureTextEntry autoComplete={mode === 'login' ? 'current-password' : 'new-password'} />
 
+          {notice ? <View style={styles.notice}><Text style={styles.noticeText}>{notice}</Text></View> : null}
           <Button label={submitting ? 'Please wait...' : mode === 'login' ? 'Sign in' : 'Create account'} onPress={submitting ? undefined : submit} />
           <Pressable onPress={() => setMode(mode === 'login' ? 'signup' : 'login')} style={styles.switch}>
             <Text style={styles.switchText}>{mode === 'login' ? 'New to Carprise? Create an account' : 'Already registered? Sign in'}</Text>
@@ -81,6 +104,8 @@ const styles = StyleSheet.create({
   half: { flex: 1 },
   label: { color: C.text, fontSize: 12, fontWeight: '700', marginBottom: 8, marginTop: 14 },
   input: { backgroundColor: C.panel, borderWidth: 1, borderColor: C.line, borderRadius: 14, color: C.text, paddingHorizontal: 15, paddingVertical: 14, fontSize: 15 },
+  notice: { marginTop: 18, marginBottom: 2, borderWidth: 1, borderColor: C.gold, backgroundColor: '#17140E', borderRadius: 12, padding: 13 },
+  noticeText: { color: C.text, fontSize: 13, lineHeight: 19 },
   switch: { alignItems: 'center', padding: 18 },
   switchText: { color: C.gold, fontWeight: '700', fontSize: 13 },
 });

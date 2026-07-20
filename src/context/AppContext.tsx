@@ -5,6 +5,7 @@ import type { Campaign, CampaignStatus, Driver, Vehicle } from '@/src/types';
 
 type SaveProfileInput = { firstName: string; lastName: string; phone: string };
 type SaveVehicleInput = Vehicle;
+type SignUpResult = { error: string | null; signedIn: boolean; needsConfirmation: boolean };
 
 type Ctx = {
   session: Session | null;
@@ -15,7 +16,7 @@ type Ctx = {
   campaigns: Campaign[];
   notifications: boolean;
   setNotifications: (value: boolean) => void;
-  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<string | null>;
+  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<SignUpResult>;
   signIn: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -155,23 +156,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, [loadData]);
 
-  const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
-    if (!supabase) return 'Supabase is not configured.';
+  const signUp = async (email: string, password: string, firstName: string, lastName: string): Promise<SignUpResult> => {
+    if (!supabase) return { error: 'Supabase is not configured.', signedIn: false, needsConfirmation: false };
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
       options: { data: { first_name: firstName.trim(), last_name: lastName.trim() } },
     });
-    if (error) return error.message;
-    if (data.user) {
-      const { error: profileError } = await supabase.from('profiles').upsert({
-        id: data.user.id,
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
-      });
-      if (profileError) return profileError.message;
-    }
-    return null;
+    if (error) return { error: error.message, signedIn: false, needsConfirmation: false };
+
+    // A database trigger creates the profile. Do not treat a missing session as a failed sign-up:
+    // Supabase returns a user without a session when email confirmation is required.
+    return {
+      error: null,
+      signedIn: Boolean(data.session),
+      needsConfirmation: Boolean(data.user && !data.session),
+    };
   };
 
   const signIn = async (email: string, password: string) => {
