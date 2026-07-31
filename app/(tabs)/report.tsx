@@ -1,12 +1,22 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { C, Space } from '@/src/constants/theme';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { C, R, Space } from '@/src/constants/theme';
 import { Card, ScreenTitle, MetricTile } from '@/src/components/ui';
 import { useApp } from '@/src/context/AppContext';
 import { formatMinutes, getDailyReport } from '@/src/data/dailyReport';
 
 export default function RoutesReportScreen() {
-  const { driver, campaigns } = useApp();
-  const report = getDailyReport(driver?.id);
+  const {
+    driver,
+    campaigns,
+    dailyReport,
+    tracking,
+    trackingEnabled,
+    setTrackingEnabled,
+    refresh,
+    refreshing,
+  } = useApp();
+  const report = dailyReport ?? getDailyReport(driver?.id);
+  const live = report.source === 'live';
   const earned = campaigns
     .filter(c => c.status === 'complete' || c.status === 'completed')
     .reduce((s, c) => s + c.pay, 0);
@@ -23,14 +33,49 @@ export default function RoutesReportScreen() {
       />
 
       <Card style={styles.hero}>
-        <Text style={styles.heroLabel}>{report.dateLabel}</Text>
+        <View style={styles.heroTop}>
+          <Text style={styles.heroLabel}>{report.dateLabel}</Text>
+          <View style={[styles.sourcePill, live ? styles.sourceLive : styles.sourceEst]}>
+            <Text style={styles.sourceText}>{live ? 'Live GPS' : 'Estimate'}</Text>
+          </View>
+        </View>
         <Text style={styles.heroValue}>{report.distanceKm} km</Text>
-        <Text style={styles.heroHint}>Total distance travelled today</Text>
+        <Text style={styles.heroHint}>
+          {live
+            ? `Total distance from ${report.pointCount} GPS samples`
+            : 'Pilot estimate until route tracking collects samples'}
+        </Text>
         <Text style={styles.note}>{report.note}</Text>
       </Card>
 
+      <Card style={styles.trackCard}>
+        <View style={styles.trackHead}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.trackTitle}>Route tracking</Text>
+            <Text style={styles.trackMeta}>
+              {tracking.permission === 'denied'
+                ? 'Permission denied — enable location for live distance.'
+                : tracking.tracking
+                  ? `Recording · ${tracking.buffered} buffered`
+                  : trackingEnabled
+                    ? 'Requesting location…'
+                    : 'Paused — turn on to measure this shift.'}
+            </Text>
+          </View>
+          <Pressable onPress={() => setTrackingEnabled(!trackingEnabled)} style={styles.trackBtn}>
+            <Text style={styles.trackBtnText}>{trackingEnabled ? 'Pause' : 'Start'}</Text>
+          </Pressable>
+        </View>
+        {tracking.lastError ? (
+          <Text style={styles.trackError}>{tracking.lastError}</Text>
+        ) : null}
+        <Pressable onPress={() => void refresh()} disabled={refreshing}>
+          <Text style={styles.refreshLink}>{refreshing ? 'Refreshing…' : 'Refresh report →'}</Text>
+        </Pressable>
+      </Card>
+
       <View style={styles.metrics}>
-        <MetricTile label="Journeys" value={String(report.journeys)} hint="Passenger trips" />
+        <MetricTile label="Journeys" value={String(report.journeys)} hint="Trip segments" />
         <MetricTile label="On road" value={formatMinutes(report.activeMinutes)} hint="Active time" />
       </View>
       <View style={[styles.metrics, { marginTop: 10 }]}>
@@ -51,8 +96,7 @@ export default function RoutesReportScreen() {
         <Text style={styles.rowLabel}>Primary area today</Text>
         <Text style={styles.rowValue}>{report.topArea}</Text>
         <Text style={styles.rowMeta}>
-          Used for brand matching and density reporting. Live GPS corridors will refine this in a later
-          release.
+          Used for brand matching and density reporting. Corridor maps improve as live samples grow.
         </Text>
       </Card>
 
@@ -67,8 +111,9 @@ export default function RoutesReportScreen() {
       </Card>
 
       <Text style={styles.footer}>
-        Distance and journey counts are pilot estimates until vehicle telemetry is connected. Earnings
-        figures combine live campaign data with daily estimates.
+        {live
+          ? 'Distance and journey segments are calculated from your device GPS. Earnings combine campaign data with distance-aware estimates.'
+          : 'Enable route tracking so distance and journey counts use live GPS instead of pilot estimates.'}
       </Text>
     </ScrollView>
   );
@@ -84,6 +129,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   hero: { paddingVertical: 24 },
+  heroTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   heroLabel: {
     color: C.champagne,
     fontSize: 11,
@@ -91,6 +137,15 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
+  sourcePill: {
+    borderRadius: R.pill,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+  },
+  sourceLive: { borderColor: 'rgba(168,217,106,0.35)', backgroundColor: 'rgba(168,217,106,0.1)' },
+  sourceEst: { borderColor: C.line, backgroundColor: C.panel2 },
+  sourceText: { color: C.muted, fontSize: 10, fontWeight: '600' },
   heroValue: {
     color: C.paper,
     fontSize: 48,
@@ -100,6 +155,20 @@ const styles = StyleSheet.create({
   },
   heroHint: { color: C.muted, fontSize: 14, marginTop: 4 },
   note: { color: C.muted, fontSize: 13, lineHeight: 20, marginTop: 16 },
+  trackCard: { gap: 10 },
+  trackHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  trackTitle: { color: C.paper, fontSize: 15, fontWeight: '500' },
+  trackMeta: { color: C.muted, fontSize: 12, lineHeight: 17, marginTop: 4 },
+  trackBtn: {
+    borderWidth: 1,
+    borderColor: C.lineStrong,
+    borderRadius: R.md,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  trackBtnText: { color: C.paper, fontSize: 12, fontWeight: '600' },
+  trackError: { color: C.danger, fontSize: 12, lineHeight: 17 },
+  refreshLink: { color: C.champagne, fontSize: 13, fontWeight: '600' },
   metrics: { flexDirection: 'row', gap: 10 },
   section: {
     color: C.muted2,

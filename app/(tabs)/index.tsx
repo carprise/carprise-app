@@ -7,13 +7,24 @@ import { useApp } from '@/src/context/AppContext';
 import { formatMinutes, getDailyReport } from '@/src/data/dailyReport';
 
 export default function TodayScreen() {
-  const { driver, vehicle, campaigns, refreshing, refresh } = useApp();
+  const {
+    driver,
+    vehicle,
+    campaigns,
+    dailyReport,
+    tracking,
+    trackingEnabled,
+    setTrackingEnabled,
+    refreshing,
+    refresh,
+  } = useApp();
   const active = campaigns.find(
     c => c.status === 'active' || c.status === 'accepted' || c.status === 'review',
   );
   const invited = campaigns.find(c => c.status === 'invited');
   const firstName = driver?.firstName || driver?.name || 'Driver';
-  const report = getDailyReport(driver?.id);
+  const report = dailyReport ?? getDailyReport(driver?.id);
+  const live = report.source === 'live';
 
   return (
     <ScrollView
@@ -37,7 +48,12 @@ export default function TodayScreen() {
         </View>
       </View>
 
-      <Text style={styles.section}>Today&apos;s report</Text>
+      <View style={styles.sectionRow}>
+        <Text style={[styles.section, styles.sectionInline]}>Today&apos;s report</Text>
+        <View style={[styles.sourcePill, live ? styles.sourceLive : styles.sourceEst]}>
+          <Text style={styles.sourceText}>{live ? 'Live GPS' : 'Estimate'}</Text>
+        </View>
+      </View>
       <View style={styles.metrics}>
         <MetricTile label="Distance" value={`${report.distanceKm} km`} hint="Travelled today" />
         <MetricTile label="Journeys" value={String(report.journeys)} hint={report.topArea} />
@@ -54,6 +70,29 @@ export default function TodayScreen() {
           hint={`${report.campaignHours}h campaign time`}
         />
       </View>
+
+      <Pressable
+        onPress={() => setTrackingEnabled(!trackingEnabled)}
+        style={styles.trackRow}
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={styles.trackTitle}>
+            Route tracking · {tracking.tracking ? 'On' : trackingEnabled ? 'Starting…' : 'Off'}
+          </Text>
+          <Text style={styles.trackMeta}>
+            {tracking.permission === 'denied'
+              ? 'Location permission denied — enable in browser/settings for live distance.'
+              : report.trackingHint ||
+                (tracking.tracking
+                  ? `${tracking.buffered} samples buffered`
+                  : 'Enable to record live distance for this shift.')}
+          </Text>
+        </View>
+        <View style={[styles.toggle, trackingEnabled && styles.toggleOn]}>
+          <View style={[styles.toggleKnob, trackingEnabled && styles.toggleKnobOn]} />
+        </View>
+      </Pressable>
+
       <Pressable onPress={() => router.push('/(tabs)/report')}>
         <Text style={styles.inlineLink}>Full routes report →</Text>
       </Pressable>
@@ -116,6 +155,7 @@ export default function TodayScreen() {
           <Text style={styles.vehicleMeta}>
             {vehicle?.registration || 'Add registration'}
             {vehicle?.verificationStatus === 'verified' ? ' · Verified' : ' · Pending review'}
+            {vehicle?.journeyCode ? ` · Passenger ${vehicle.journeyCode}` : ''}
           </Text>
         </View>
         <Pressable onPress={() => router.push('/(tabs)/vehicle')} style={styles.smallBtn}>
@@ -124,8 +164,8 @@ export default function TodayScreen() {
       </Card>
 
       <Text style={styles.footerNote}>
-        This is the driver operations app: work, stock, routes and earnings. Passenger comfort,
-        music and ordering live in the separate customer experience.
+        This is the driver operations app: work, stock, routes and earnings. Passengers use a separate
+        experience at /j/[code] for ordering, personalisation and cabin controls.
       </Text>
     </ScrollView>
   );
@@ -169,6 +209,13 @@ const styles = StyleSheet.create({
     backgroundColor: C.panel,
   },
   statusText: { color: C.muted, fontSize: 12, fontWeight: '500' },
+  sectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 18,
+    marginBottom: 4,
+  },
   section: {
     color: C.muted2,
     fontSize: 11,
@@ -178,7 +225,48 @@ const styles = StyleSheet.create({
     marginTop: 18,
     marginBottom: 4,
   },
+  sectionInline: { marginTop: 0, marginBottom: 0 },
+  sourcePill: {
+    borderRadius: R.pill,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+  },
+  sourceLive: { borderColor: 'rgba(168,217,106,0.35)', backgroundColor: 'rgba(168,217,106,0.1)' },
+  sourceEst: { borderColor: C.line, backgroundColor: C.panel },
+  sourceText: { color: C.muted, fontSize: 10, fontWeight: '600', letterSpacing: 0.6 },
   metrics: { flexDirection: 'row', gap: 10 },
+  trackRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: C.panel,
+    borderWidth: 1,
+    borderColor: C.line,
+    borderRadius: R.lg,
+    padding: 16,
+    marginTop: 4,
+  },
+  trackTitle: { color: C.paper, fontSize: 14, fontWeight: '500' },
+  trackMeta: { color: C.muted, fontSize: 12, lineHeight: 17, marginTop: 4 },
+  toggle: {
+    width: 44,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: C.panel3,
+    borderWidth: 1,
+    borderColor: C.line,
+    padding: 2,
+    justifyContent: 'center',
+  },
+  toggleOn: { backgroundColor: 'rgba(212,184,150,0.25)', borderColor: C.hairline },
+  toggleKnob: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: C.muted2,
+  },
+  toggleKnobOn: { backgroundColor: C.champagne, alignSelf: 'flex-end' },
   inlineLink: {
     color: C.champagne,
     fontSize: 13,

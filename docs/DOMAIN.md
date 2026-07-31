@@ -7,7 +7,7 @@
 | `https://www.carprise.co.uk` | Marketing website (`carprise-website`) |
 | `https://www.carprise.co.uk/drivers` | Driver recruitment / apply |
 | `https://www.carprise.co.uk/drive` | **Driver app** (Expo web, proxied) |
-| `https://www.carprise.co.uk/j/[code]` | Passenger journey |
+| `https://www.carprise.co.uk/j/[code]` | Passenger experience (native hospitality UI) |
 | `https://www.carprise.co.uk/ops` | Ops admin |
 | `https://www.carprise.co.uk/portal` | Brand portal |
 
@@ -64,17 +64,20 @@ npm run dev
 # open http://localhost:3000/drive
 ```
 
-## Platform proxy (optional)
+## Passenger journey (native on website)
+
+Open:
+
+- `http://localhost:3000/j/MCR01TAS` (demo cabin always works)
+- Live vehicles resolve by `journey_code` when Supabase service role is set
+
+## Platform proxy (optional — brand portal only)
 
 ```bash
 PLATFORM_WEB_ORIGIN=http://localhost:3001
 ```
 
-Then run the platform on port 3001 and open:
-
-- `/j/MCR01TAS`
-- `/ops`
-- `/portal`
+Then run the platform on port 3001 and open `/portal`.
 
 ## Deploy checklist
 

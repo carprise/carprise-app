@@ -10,13 +10,18 @@ Three surfaces. Different users. Different jobs. Different UI.
 
 | Area | Purpose |
 |------|---------|
-| Today | Daily report, active work, next actions |
+| Today | Daily report, route tracking toggle, active work |
 | Work | Campaign invitations, activation, evidence |
-| Stock | Inventory on the vehicle, samples, retail units |
-| Routes | Distance, journeys, coverage (analytics) |
+| Stock | Live inventory from ops (fallback estimate) |
+| Routes | Live GPS distance + journey analytics |
 | Account | Profile, vehicle verification, payouts |
 
-## 2. Passenger / customer experience
+### Live systems
+
+- **Distance:** `telemetry_points` + `driver_daily_stats()` (see `supabase/live-ops-and-passenger.sql`)
+- **Stock:** `inventory` + `products` assigned in `/ops` → Inventory
+
+## 2. Passenger / customer experience (`/j/[code]`)
 
 **Users:** Passengers in the car  
 **Job:** Journey comfort, discovery, ordering  
@@ -24,23 +29,28 @@ Three surfaces. Different users. Different jobs. Different UI.
 
 | Area | Purpose |
 |------|---------|
-| Welcome | Context-aware journey entry (QR / vehicle code) |
-| Offers & order | Samples, retail, cashless checkout |
-| Personalisation | Preferences, recommendations |
-| Cabin | Music, temperature, ambient experience (future) |
-| Rewards | Journey perks (future) |
+| Home | Calm welcome, separate from driver shell |
+| Order | Samples & retail from on-board stock |
+| For you | Name, mood, interest personalisation |
+| Cabin | Temperature target + music ambience |
 
-Entry today: vehicle journey code / QR → passenger web experience.  
-Must **not** reuse the driver shell or ops chrome.
+**Design:** warm cream hospitality shell — not the dark ops instrument panel.  
+Entry: vehicle journey code / QR → `https://www.carprise.co.uk/j/[code]`
 
 ## 3. Carprise Ops (`/ops`)
 
 **Users:** Internal Carprise team  
 **Job:** Verify vehicles, create campaigns, assign work, stock network  
 
+| Area | Purpose |
+|------|---------|
+| Drivers / vehicles | Verification |
+| Campaigns | Assign commercial work |
+| Inventory | Products + vehicle stock levels |
+
 ## Design direction
 
 - **Premium mobility / private hire**, not budget airline  
-- Quiet ink surfaces, champagne accents, restrained type  
-- Driver app = professional instrument panel  
-- Passenger app = calm, hospitality-led experience  
+- Driver app = professional instrument panel (ink + champagne)  
+- Passenger app = calm, hospitality-led cream experience  
+- Never reuse the same shell or navigation for both  

@@ -2,6 +2,14 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import type { Session } from '@supabase/supabase-js';
 import { AUTH_REDIRECT_URL, supabase } from '@/src/lib/supabase';
 import type { Campaign, CampaignStatus, Driver, Vehicle } from '@/src/types';
+import { fetchDailyReport, type DailyReport } from '@/src/data/dailyReport';
+import { fetchVehicleStock, type StockItem, type StockSnapshot } from '@/src/data/stock';
+import {
+  getTelemetryStatus,
+  startTelemetry,
+  stopTelemetry,
+  type TelemetryStatus,
+} from '@/src/lib/telemetry';
 
 type SaveProfileInput = { firstName: string; lastName: string; phone: string };
 type SaveVehicleInput = Vehicle;
@@ -14,6 +22,13 @@ type Ctx = {
   driver: Driver | null;
   vehicle: Vehicle | null;
   campaigns: Campaign[];
+  dailyReport: DailyReport | null;
+  stock: StockItem[];
+  stockSource: StockSnapshot['source'];
+  stockUpdatedAt: string | null;
+  tracking: TelemetryStatus;
+  trackingEnabled: boolean;
+  setTrackingEnabled: (value: boolean) => void;
   notifications: boolean;
   setNotifications: (value: boolean) => void;
   signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<SignUpResult>;
@@ -100,6 +115,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [driver, setDriver] = useState<Driver | null>(null);
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [dailyReport, setDailyReport] = useState<DailyReport | null>(null);
+  const [stock, setStock] = useState<StockItem[]>([]);
+  const [stockSource, setStockSource] = useState<StockSnapshot['source']>('estimate');
+  const [stockUpdatedAt, setStockUpdatedAt] = useState<string | null>(null);
+  const [tracking, setTracking] = useState<TelemetryStatus>(getTelemetryStatus());
+  const [trackingEnabled, setTrackingEnabled] = useState(true);
   const [notifications, setNotifications] = useState(true);
 
   const loadData = useCallback(async (activeSession: Session | null, showRefresh = false) => {
@@ -107,6 +128,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setDriver(null);
       setVehicle(null);
       setCampaigns([]);
+      setDailyReport(null);
+      setStock([]);
+      setStockSource('estimate');
+      setStockUpdatedAt(null);
       setLoading(false);
       return;
     }
@@ -152,7 +177,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } : null);
 
     const rows = assignmentResult.data ?? [];
-    setCampaigns(rows.flatMap((row: any) => {
+    const mappedCampaigns: Campaign[] = rows.flatMap((row: any) => {
       const campaign = Array.isArray(row.campaign) ? row.campaign[0] : row.campaign;
       if (!campaign) return [];
       const status = (row.status ?? 'invited') as CampaignStatus;
@@ -170,7 +195,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         progress,
         tasks: tasksFor(status, progress),
       }];
-    }));
+    });
+    setCampaigns(mappedCampaigns);
+
+    const activePay = mappedCampaigns
+      .filter(c => ['accepted', 'active', 'review'].includes(c.status))
+      .reduce((s, c) => s + c.pay, 0);
+    const vehicleId = vehicleRow?.id as string | undefined;
+
+    const [report, stockSnap] = await Promise.all([
+      fetchDailyReport(userId, { activePay }),
+      fetchVehicleStock(vehicleId),
+    ]);
+    setDailyReport(report);
+    setStock(stockSnap.items);
+    setStockSource(stockSnap.source);
+    setStockUpdatedAt(stockSnap.updatedAt ?? null);
 
     setLoading(false);
     setRefreshing(false);
@@ -194,6 +234,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     return () => listener.subscription.unsubscribe();
   }, [loadData]);
+
+  // Live GPS tracking while signed in (opt-out via trackingEnabled)
+  useEffect(() => {
+    if (!session?.user?.id || !trackingEnabled) {
+      void stopTelemetry({ flush: true });
+      setTracking(getTelemetryStatus());
+      return;
+    }
+
+    let cancelled = false;
+    void startTelemetry({
+      driverId: session.user.id,
+      vehicleId: vehicle?.id,
+      onStatus: next => {
+        if (!cancelled) setTracking(next);
+      },
+    }).then(next => {
+      if (!cancelled) setTracking(next);
+    });
+
+    return () => {
+      cancelled = true;
+      void stopTelemetry({ flush: true });
+    };
+  }, [session?.user?.id, vehicle?.id, trackingEnabled]);
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string): Promise<SignUpResult> => {
     if (!supabase) return { error: 'Supabase is not configured.', signedIn: false, needsConfirmation: false };
@@ -256,6 +321,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
+    await stopTelemetry({ flush: true });
     await supabase?.auth.signOut();
   };
 
@@ -337,6 +403,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     driver,
     vehicle,
     campaigns,
+    dailyReport,
+    stock,
+    stockSource,
+    stockUpdatedAt,
+    tracking,
+    trackingEnabled,
+    setTrackingEnabled,
     notifications,
     setNotifications,
     signUp,
@@ -359,7 +432,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     uploadVehiclePhoto,
     uploadEvidence,
-  }), [session, loading, refreshing, driver, vehicle, campaigns, notifications, loadData]);
+  }), [
+    session,
+    loading,
+    refreshing,
+    driver,
+    vehicle,
+    campaigns,
+    dailyReport,
+    stock,
+    stockSource,
+    stockUpdatedAt,
+    tracking,
+    trackingEnabled,
+    notifications,
+    loadData,
+  ]);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

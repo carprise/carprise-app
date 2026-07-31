@@ -19,6 +19,7 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Carprise uses your camera to upload vehicle and campaign evidence photos.",
         "NSPhotoLibraryUsageDescription": "Carprise uses your photo library to upload vehicle and campaign evidence photos.",
+        "NSLocationWhenInUseUsageDescription": "Carprise tracks distance travelled during your shift for the daily routes report.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -29,7 +30,9 @@
         "backgroundColor": "#08090B"
       },
       "permissions": [
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ]
     },
     "plugins": [
@@ -40,6 +43,12 @@
         "expo-image-picker",
         {
           "photosPermission": "Allow Carprise to access photos for vehicle and campaign evidence."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Carprise to measure distance travelled for your daily routes report."
         }
       ]
     ],

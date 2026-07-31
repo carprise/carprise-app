@@ -1,24 +1,34 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { C, Space } from '@/src/constants/theme';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { C, R, Space } from '@/src/constants/theme';
 import { Card, ScreenTitle, Pill } from '@/src/components/ui';
 import { useApp } from '@/src/context/AppContext';
-import { getVehicleStock } from '@/src/data/stock';
 
 export default function StockScreen() {
-  const { vehicle } = useApp();
-  const stock = getVehicleStock(vehicle?.id);
+  const { vehicle, stock, stockSource, stockUpdatedAt, refreshing, refresh } = useApp();
   const low = stock.filter(s => s.quantity <= s.lowAt);
+  const live = stockSource === 'live';
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.page}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.champagne} />
+      }
+    >
       <ScreenTitle
         eyebrow="Vehicle stock"
         title="Inventory on board."
-        copy="Samples and retail units carried for passenger journeys. Restock from Carprise ops when levels run low."
+        copy="Samples and retail units carried for passenger journeys. Levels sync from Carprise ops when assigned to this vehicle."
       />
 
       <Card style={styles.summary}>
-        <Text style={styles.summaryLabel}>Vehicle</Text>
+        <View style={styles.summaryTop}>
+          <Text style={styles.summaryLabel}>Vehicle</Text>
+          <View style={[styles.sourcePill, live ? styles.sourceLive : styles.sourceEst]}>
+            <Text style={styles.sourceText}>{live ? 'Live from ops' : 'Estimate'}</Text>
+          </View>
+        </View>
         <Text style={styles.summaryValue}>
           {vehicle
             ? `${vehicle.registration || 'No reg'} · ${vehicle.make} ${vehicle.model}`
@@ -28,6 +38,14 @@ export default function StockScreen() {
           {low.length
             ? `${low.length} item${low.length === 1 ? '' : 's'} at or below restock level`
             : 'Stock levels look healthy'}
+          {live && stockUpdatedAt
+            ? ` · Updated ${new Intl.DateTimeFormat('en-GB', {
+                day: 'numeric',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+              }).format(new Date(stockUpdatedAt))}`
+            : ''}
         </Text>
       </Card>
 
@@ -52,8 +70,9 @@ export default function StockScreen() {
       })}
 
       <Text style={styles.note}>
-        Stock counts will sync from Carprise ops inventory once this vehicle is linked to live stock
-        records. Until then, figures are pilot estimates for planning.
+        {live
+          ? 'These counts come from ops inventory for this vehicle. Pull to refresh after restock.'
+          : 'No live inventory rows for this vehicle yet. Assign stock in /ops → Inventory, or figures stay as pilot estimates.'}
       </Text>
     </ScrollView>
   );
@@ -69,6 +88,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   summary: { marginBottom: 6 },
+  summaryTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   summaryLabel: {
     color: C.muted2,
     fontSize: 10,
@@ -76,6 +100,15 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
+  sourcePill: {
+    borderRadius: R.pill,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+  },
+  sourceLive: { borderColor: 'rgba(168,217,106,0.35)', backgroundColor: 'rgba(168,217,106,0.1)' },
+  sourceEst: { borderColor: C.line, backgroundColor: C.panel2 },
+  sourceText: { color: C.muted, fontSize: 10, fontWeight: '600' },
   summaryValue: {
     color: C.paper,
     fontSize: 17,
