@@ -114,7 +114,7 @@ export default function Home() {
         <Text style={styles.actionTitle}>You drive. We commercialise the journey.</Text>
         <Text style={styles.actionCopy}>
           Fares stay with your mobility platform. Carprise adds campaigns, samples and cashless retail
-          in-vehicle — then shares the value with you.
+          in-vehicle, then shares the value with you.
         </Text>
       </Card>
     </ScrollView>

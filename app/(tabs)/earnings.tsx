@@ -55,7 +55,7 @@ export default function Earnings() {
           1. Campaign fee when you complete activation checklist and evidence is approved.{'\n'}
           2. Transaction share when passengers buy products during journeys in your vehicle.{'\n'}
           3. Sample fulfilment bonus when free trials are claimed from your kit.{'\n'}
-          Fares always stay with your mobility provider — Carprise only monetises the commercial layer.
+          Fares always stay with your mobility provider. Carprise only monetises the commercial layer.
         </Text>
       </Card>
 

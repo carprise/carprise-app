@@ -1,5 +1,5 @@
 /**
- * Carprise brand tokens — aligned with carprise.co.uk (globals.css)
+ * Carprise brand tokens, aligned with carprise.co.uk (globals.css)
  */
 export const C = {
   // Surfaces
