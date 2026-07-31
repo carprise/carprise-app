@@ -1,89 +1,39 @@
-# Email when a vehicle is verified
+# Automatic email when a vehicle is verified
 
-**Today:** changing `verification_status` to `verified` in Supabase only updates the database.  
-**With this setup:** the driver gets an email from `support@carprise.co.uk`.
+When `verification_status` is changed to **`verified`**, the driver is emailed automatically from **Carprise &lt;support@carprise.co.uk&gt;**.
 
-## What the email says
+## Setup (do this once)
 
-- Vehicle is approved for the Carprise network  
-- Link to open the driver app: `https://www.carprise.co.uk/drive`  
-- From: Carprise / support@  
+### 1. Enable extension
+Supabase → **Database → Extensions** → turn on **`pg_net`**.
 
-## Setup (about 10 minutes)
-
-### 1. Deploy the Edge Function
-
-From the project root (with [Supabase CLI](https://supabase.com/docs/guides/cli) logged in):
-
-```bash
-npx supabase login
-npx supabase link --project-ref xfukghylbjtnywhymqrm
-npx supabase secrets set RESEND_API_KEY=re_xxxxxxxx
-npx supabase secrets set RESEND_FROM_EMAIL="Carprise <support@carprise.co.uk>"
-npx supabase secrets set DRIVER_APP_URL=https://www.carprise.co.uk/drive
-npx supabase functions deploy notify-vehicle-verified
-```
-
-`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are usually injected automatically for Edge Functions.
-
-### 2. Database Webhook (recommended)
-
-In Supabase Dashboard:
-
-1. **Database → Webhooks → Create a new hook**
-2. **Name:** `vehicle-verified-email`
-3. **Table:** `vehicles`
-4. **Events:** `UPDATE`
-5. **Type:** HTTP Request  
-6. **Method:** POST  
-7. **URL:**  
-   `https://xfukghylbjtnywhymqrm.supabase.co/functions/v1/notify-vehicle-verified`
-8. **HTTP Headers:**
-   - `Content-Type` = `application/json`
-   - `Authorization` = `Bearer <ANON_KEY or SERVICE_ROLE_KEY>`
-9. Save
-
-The function only sends mail when:
-
-- `record.verification_status` is `verified`, and  
-- `old_record.verification_status` was **not** `verified`
-
-So re-saving an already-verified car does not spam the driver.
+### 2. Run SQL
+1. Open `supabase/vehicle-verified-email-trigger.sql`
+2. Find `re_REPLACE_WITH_YOUR_RESEND_KEY` and replace with your real Resend API key
+3. Supabase → **SQL Editor** → paste entire file → **Run**
 
 ### 3. Test
+1. **Table Editor → vehicles**
+2. Set a car to `pending` (if it is already verified)
+3. Change to `verified`
+4. Check Resend logs + the driver’s email inbox
 
-1. Set a vehicle to `pending` (if needed).  
-2. Change `verification_status` to `verified` in Table Editor.  
-3. Check:
-   - Edge Function logs  
-   - Resend dashboard (email delivered)  
-   - Driver inbox (and spam)
+## What the driver gets
 
-## Manual fallback (pilot, no function)
+- Subject: **Your vehicle has been verified - Carprise**
+- From: **support@carprise.co.uk**
+- Link: https://www.carprise.co.uk/drive
 
-If you prefer not to automate yet:
+## Change Resend key later
 
-1. Verify the vehicle in Supabase.  
-2. Email the driver from `support@carprise.co.uk` (or Resend) yourself:
+```sql
+update private.app_config
+set value = 're_NEW_KEY_HERE'
+where key = 'resend_api_key';
+```
 
-**Subject:** Your vehicle has been verified – Carprise  
+## Notes
 
-**Body:**  
-Hi [name],  
-Your vehicle has been reviewed and approved for the Carprise driver network.  
-Open the app: https://www.carprise.co.uk/drive  
-– The Carprise team  
-
-## Troubleshooting
-
-| Issue | Check |
-|--------|--------|
-| No email | Webhook fired? Function logs? Resend domain verified? |
-| 401 from function | Authorization header key correct |
-| 404 driver email | `driver_id` must match `auth.users` / profile id |
-| Email works but wrong From | `RESEND_FROM_EMAIL` secret and domain verification |
-
-## Files
-
-- `supabase/functions/notify-vehicle-verified/index.ts` – sends the email  
-- `supabase/vehicle-verified-notify.sql` – optional notes / manual HTTP post  
+- Only fires on **change to** `verified` (not every save)
+- Uses the email on the Auth user linked by `driver_id`
+- Needs Resend domain `carprise.co.uk` verified
