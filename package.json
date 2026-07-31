@@ -12,6 +12,7 @@
     "web": "expo start --web",
     "web:drive": "expo start --web",
     "export:web": "expo export -p web",
+    "build": "expo export -p web && node scripts/nest-drive-dist.js",
     "typecheck": "tsc --noEmit",
     "platform": "npm --prefix platform run dev",
     "platform:3001": "npm --prefix platform run dev -- --port 3001",
