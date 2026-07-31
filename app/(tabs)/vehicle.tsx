@@ -1,10 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { C, R } from '@/src/constants/theme';
 import { Button, Card, Pill, ScreenTitle } from '@/src/components/ui';
 import { useApp } from '@/src/context/AppContext';
+
+const PASSENGER_ORIGIN = 'https://www.carprise.co.uk';
+
+function journeyUrl(code: string) {
+  return `${PASSENGER_ORIGIN}/j/${encodeURIComponent(code)}`;
+}
+
+function qrUrl(code: string) {
+  const data = encodeURIComponent(journeyUrl(code));
+  return `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data=${data}`;
+}
 
 export default function VehicleScreen() {
   const { vehicle, saveVehicle, uploadVehiclePhoto } = useApp();
@@ -83,6 +94,29 @@ export default function VehicleScreen() {
           </Text>
         ) : null}
       </Card>
+
+      {vehicle?.journeyCode ? (
+        <Card style={styles.qrCard}>
+          <Text style={styles.qrLabel}>Passenger QR sticker</Text>
+          <Text style={styles.qrCopy}>
+            Place this code in the cabin. Any passenger phone opens the hospitality experience — not this
+            driver app.
+          </Text>
+          <Image
+            source={{ uri: qrUrl(vehicle.journeyCode) }}
+            style={styles.qrImage}
+            accessibilityLabel={`QR code for journey ${vehicle.journeyCode}`}
+          />
+          <Text style={styles.qrCode}>{vehicle.journeyCode}</Text>
+          <Text style={styles.qrUrl}>{journeyUrl(vehicle.journeyCode).replace('https://', '')}</Text>
+          <Pressable
+            onPress={() => void Linking.openURL(journeyUrl(vehicle.journeyCode!))}
+            style={styles.qrLinkBtn}
+          >
+            <Text style={styles.qrLinkText}>Preview passenger cabin →</Text>
+          </Pressable>
+        </Card>
+      ) : null}
 
       <Card>
         <View style={styles.row}>
@@ -178,6 +212,39 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   city: { color: C.muted, fontSize: 12, marginTop: 6, textTransform: 'capitalize' },
+  qrCard: { alignItems: 'center', paddingVertical: 22 },
+  qrLabel: {
+    color: C.champagne,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+    alignSelf: 'flex-start',
+  },
+  qrCopy: {
+    color: C.muted,
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 8,
+    marginBottom: 16,
+    alignSelf: 'stretch',
+  },
+  qrImage: {
+    width: 200,
+    height: 200,
+    borderRadius: R.md,
+    backgroundColor: '#fff',
+  },
+  qrCode: {
+    color: C.paper,
+    fontSize: 20,
+    fontWeight: '500',
+    letterSpacing: 2,
+    marginTop: 14,
+  },
+  qrUrl: { color: C.muted2, fontSize: 11, marginTop: 6 },
+  qrLinkBtn: { marginTop: 14 },
+  qrLinkText: { color: C.champagne, fontSize: 13, fontWeight: '600' },
   row: { flexDirection: 'row', gap: 10 },
   field: { flex: 1, marginBottom: 14 },
   label: {

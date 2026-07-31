@@ -361,6 +361,40 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!supabase || !session) return 'You are not signed in.';
     const { error } = await supabase.from('campaign_assignments').update(values).eq('id', assignmentId).eq('driver_id', session.user.id);
     if (error) return error.message;
+
+    // When a campaign is completed, credit pending earnings (best-effort; ops can also complete).
+    const status = values.status != null ? String(values.status) : '';
+    const progress = values.progress != null ? Number(values.progress) : null;
+    const done = status === 'completed' || status === 'complete' || progress === 100;
+    if (done) {
+      try {
+        const campaign = campaigns.find(c => c.assignmentId === assignmentId);
+        const amountPence = Math.round((campaign?.pay ?? 0) * 100);
+        if (amountPence > 0) {
+          const { data: existing } = await supabase
+            .from('earnings_ledger')
+            .select('id')
+            .eq('assignment_id', assignmentId)
+            .eq('entry_type', 'campaign')
+            .maybeSingle();
+          if (!existing) {
+            await supabase.from('earnings_ledger').insert({
+              driver_id: session.user.id,
+              assignment_id: assignmentId,
+              amount_pence: amountPence,
+              entry_type: 'campaign',
+              description: campaign
+                ? `${campaign.brand}: ${campaign.title}`
+                : 'Campaign completed',
+              status: 'pending',
+            });
+          }
+        }
+      } catch {
+        /* ledger optional if RLS blocks driver insert — ops complete still credits */
+      }
+    }
+
     await loadData(session, true);
     return null;
   };

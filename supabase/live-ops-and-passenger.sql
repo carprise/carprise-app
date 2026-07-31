@@ -202,3 +202,28 @@ create policy journey_sessions_select_own on public.journey_sessions
 
 comment on table public.telemetry_points is 'Driver app GPS samples for daily distance / routes report';
 comment on function public.driver_daily_stats is 'Haversine daily distance + journey estimates for a driver';
+
+-- Earnings ledger: drivers can read own rows; insert own campaign completions
+create table if not exists public.earnings_ledger (
+  id uuid primary key default gen_random_uuid(),
+  driver_id uuid references public.profiles(id),
+  assignment_id uuid references public.campaign_assignments(id),
+  transaction_id uuid,
+  amount_pence int not null,
+  entry_type text default 'campaign',
+  description text,
+  status text default 'pending',
+  created_at timestamptz default now()
+);
+
+alter table public.earnings_ledger enable row level security;
+
+drop policy if exists earnings_select_own on public.earnings_ledger;
+create policy earnings_select_own on public.earnings_ledger
+  for select to authenticated
+  using (driver_id = auth.uid());
+
+drop policy if exists earnings_insert_own on public.earnings_ledger;
+create policy earnings_insert_own on public.earnings_ledger
+  for insert to authenticated
+  with check (driver_id = auth.uid());
