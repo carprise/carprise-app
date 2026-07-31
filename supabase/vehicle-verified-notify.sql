@@ -1,0 +1,29 @@
+-- Optional helper: call the Edge Function when verification_status becomes 'verified'.
+-- Prefer Database Webhooks in the Dashboard (easier). Use this only if you want a SQL trigger.
+--
+-- Prerequisites:
+-- 1. Deploy edge function: notify-vehicle-verified
+-- 2. Enable extension pg_net (Database → Extensions)
+-- 3. Replace PROJECT_REF and set the service role / anon as required by your webhook auth
+--
+-- Recommended path instead: Dashboard → Database → Webhooks
+--   Table: vehicles
+--   Events: UPDATE
+--   URL: https://PROJECT_REF.supabase.co/functions/v1/notify-vehicle-verified
+--   Headers: Authorization: Bearer <anon or service role key>
+--   Filter: only when verification_status changes (configured in webhook UI if available)
+
+-- Example manual invoke from SQL after an update (for testing):
+-- select net.http_post(
+--   url := 'https://xfukghylbjtnywhymqrm.supabase.co/functions/v1/notify-vehicle-verified',
+--   headers := jsonb_build_object(
+--     'Content-Type', 'application/json',
+--     'Authorization', 'Bearer ' || '<SERVICE_ROLE_OR_ANON_KEY>'
+--   ),
+--   body := jsonb_build_object(
+--     'type', 'UPDATE',
+--     'table', 'vehicles',
+--     'record', (select to_jsonb(v) from public.vehicles v where v.id = '<vehicle-uuid>'),
+--     'old_record', jsonb_build_object('verification_status', 'pending')
+--   )
+-- );
