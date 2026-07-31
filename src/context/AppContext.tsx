@@ -50,6 +50,27 @@ const formatDate = (date?: string | null) => {
   return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' }).format(new Date(`${date}T12:00:00`));
 };
 
+/** Always return a readable string — never dump raw objects like "{}" into the UI. */
+function formatAuthError(error: unknown, fallback: string): string {
+  if (!error) return fallback;
+  if (typeof error === 'string') {
+    const trimmed = error.trim();
+    if (!trimmed || trimmed === '{}' || trimmed === '[object Object]') return fallback;
+    return trimmed;
+  }
+  if (typeof error === 'object') {
+    const e = error as Record<string, unknown>;
+    const candidates = [e.message, e.msg, e.error_description, e.error, e.code];
+    for (const value of candidates) {
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (trimmed && trimmed !== '{}' && trimmed !== '[object Object]') return trimmed;
+      }
+    }
+  }
+  return fallback;
+}
+
 const tasksFor = (status: CampaignStatus, progress: number) => [
   { label: 'Campaign accepted', done: status !== 'invited' && status !== 'declined', progress: 10 },
   { label: 'Installation approved', done: progress >= 25, progress: 25 },
@@ -168,29 +189,59 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const emailRedirectTo =
       process.env.EXPO_PUBLIC_AUTH_REDIRECT_URL ?? 'https://www.carprise.co.uk/drive';
 
-    const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
-      options: {
-        data: { first_name: firstName.trim(), last_name: lastName.trim() },
-        emailRedirectTo,
-      },
-    });
-    if (error) return { error: error.message, signedIn: false, needsConfirmation: false };
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: { first_name: firstName.trim(), last_name: lastName.trim() },
+          emailRedirectTo,
+        },
+      });
 
-    // A database trigger creates the profile. Do not treat a missing session as a failed sign-up:
-    // Supabase returns a user without a session when email confirmation is required.
-    return {
-      error: null,
-      signedIn: Boolean(data.session),
-      needsConfirmation: Boolean(data.user && !data.session),
-    };
+      if (error) {
+        return {
+          error: formatAuthError(error, 'Could not create your account. Please try again.'),
+          signedIn: false,
+          needsConfirmation: false,
+        };
+      }
+
+      // Supabase can return a user with no identities when the email is already registered
+      // (and email confirmation is on). Treat that as a clear error for the driver.
+      const identities = data.user?.identities;
+      if (data.user && Array.isArray(identities) && identities.length === 0) {
+        return {
+          error: 'An account with this email already exists. Sign in instead, or reset your password.',
+          signedIn: false,
+          needsConfirmation: false,
+        };
+      }
+
+      // A database trigger creates the profile. Missing session often means confirm-email is required.
+      return {
+        error: null,
+        signedIn: Boolean(data.session),
+        needsConfirmation: Boolean(data.user && !data.session),
+      };
+    } catch (err) {
+      return {
+        error: formatAuthError(err, 'Could not create your account. Please try again.'),
+        signedIn: false,
+        needsConfirmation: false,
+      };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
     if (!supabase) return 'Supabase is not configured.';
-    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-    return error?.message ?? null;
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (!error) return null;
+      return formatAuthError(error, 'Could not sign in. Check your email and password.');
+    } catch (err) {
+      return formatAuthError(err, 'Could not sign in. Check your email and password.');
+    }
   };
 
   const signOut = async () => {

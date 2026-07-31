@@ -27,12 +27,17 @@ export default function AuthScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState('');
 
+  const showMessage = (message: string, useAlert = false) => {
+    setNotice(message);
+    // Alert.alert is unreliable on web and can show "{}" for empty/object messages.
+    if (useAlert && Platform.OS !== 'web') {
+      Alert.alert(mode === 'login' ? 'Sign in' : 'Create account', message);
+    }
+  };
+
   const submit = async () => {
     if (!email.trim() || password.length < 6 || (mode === 'signup' && !firstName.trim())) {
-      Alert.alert(
-        'Check your details',
-        'Enter a valid email, a password of at least 6 characters, and your first name.',
-      );
+      showMessage('Enter a valid email, a password of at least 6 characters, and your first name.');
       return;
     }
     setSubmitting(true);
@@ -42,8 +47,7 @@ export default function AuthScreen() {
       const error = await signIn(email, password);
       setSubmitting(false);
       if (error) {
-        setNotice(error);
-        Alert.alert('Could not sign in', error);
+        showMessage(error);
         return;
       }
       router.replace('/(tabs)');
@@ -53,8 +57,7 @@ export default function AuthScreen() {
     const result = await signUp(email, password, firstName, lastName);
     setSubmitting(false);
     if (result.error) {
-      setNotice(result.error);
-      Alert.alert('Could not create account', result.error);
+      showMessage(result.error);
       return;
     }
     if (result.signedIn) {
