@@ -15,6 +15,7 @@ export default function Home() {
 
   return (
     <ScrollView
+      style={styles.screen}
       contentContainerStyle={styles.page}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.champagne} />}
     >
@@ -122,7 +123,8 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 20, paddingTop: 62, paddingBottom: 120, gap: 16, backgroundColor: C.bg },
+  screen: { flex: 1, backgroundColor: C.bg },
+  page: { flexGrow: 1, padding: 20, paddingTop: 62, paddingBottom: 120, gap: 16, backgroundColor: C.bg },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
   hello: {
     color: C.champagne,

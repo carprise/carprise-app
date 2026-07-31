@@ -17,7 +17,7 @@ export default function Earnings() {
   const commerceShare = Math.round(earnedTotal * 0.15 + upcomingTotal * 0.05);
 
   return (
-    <ScrollView contentContainerStyle={styles.page}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
       <ScreenTitle
         eyebrow="Earnings"
         title="Clear. Tracked. Paid."
@@ -118,7 +118,8 @@ export default function Earnings() {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 20, paddingTop: 62, paddingBottom: 120, gap: 14, backgroundColor: C.bg },
+  screen: { flex: 1, backgroundColor: C.bg },
+  page: { flexGrow: 1, padding: 20, paddingTop: 62, paddingBottom: 120, gap: 14, backgroundColor: C.bg },
   total: { padding: 24 },
   label: {
     color: C.champagne,

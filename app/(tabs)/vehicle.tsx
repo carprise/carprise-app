@@ -58,7 +58,7 @@ export default function VehicleScreen() {
   const verified = vehicle?.verificationStatus === 'verified';
 
   return (
-    <ScrollView contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled">
+    <ScrollView style={styles.screen} contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled">
       <ScreenTitle
         eyebrow="Your vehicle"
         title="Campaign ready."
@@ -141,7 +141,8 @@ function Field(props: any) {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 20, paddingTop: 62, paddingBottom: 120, gap: 14, backgroundColor: C.bg },
+  screen: { flex: 1, backgroundColor: C.bg },
+  page: { flexGrow: 1, padding: 20, paddingTop: 62, paddingBottom: 120, gap: 14, backgroundColor: C.bg },
   car: { alignItems: 'center', paddingVertical: 30 },
   carIcon: {
     width: 88,

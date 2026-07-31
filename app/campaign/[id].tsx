@@ -75,7 +75,7 @@ export default function Detail() {
   const isError = Boolean(message && (message.includes('failed') || message.includes('Could not')));
 
   return (
-    <ScrollView contentContainerStyle={styles.page}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
       <Pressable onPress={() => router.back()} style={styles.back}>
         <Ionicons name="arrow-back" color={C.paper} size={20} />
       </Pressable>
@@ -196,7 +196,8 @@ export default function Detail() {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 20, paddingTop: 60, paddingBottom: 60, gap: 14, backgroundColor: C.bg },
+  screen: { flex: 1, backgroundColor: C.bg },
+  page: { flexGrow: 1, padding: 20, paddingTop: 60, paddingBottom: 60, gap: 14, backgroundColor: C.bg },
   back: {
     width: 42,
     height: 42,

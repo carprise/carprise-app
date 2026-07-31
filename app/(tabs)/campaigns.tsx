@@ -10,6 +10,7 @@ export default function Campaigns() {
 
   return (
     <ScrollView
+      style={styles.screen}
       contentContainerStyle={styles.page}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.champagne} />}
     >
@@ -56,7 +57,8 @@ export default function Campaigns() {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 20, paddingTop: 62, paddingBottom: 120, gap: 14, backgroundColor: C.bg },
+  screen: { flex: 1, backgroundColor: C.bg },
+  page: { flexGrow: 1, padding: 20, paddingTop: 62, paddingBottom: 120, gap: 14, backgroundColor: C.bg },
   card: { padding: 20 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   pay: { color: C.champagne, fontSize: 18, fontWeight: '600', letterSpacing: -0.3 },
