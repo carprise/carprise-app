@@ -63,7 +63,9 @@ export default function AuthScreen() {
       return;
     }
 
-    setNotice('Your account has been created. Check your email to confirm it, then return here and sign in.');
+    setNotice(
+      'Your account has been created. Check your inbox for a confirmation email from support@carprise.co.uk, then return here and sign in.',
+    );
     setMode('login');
     setPassword('');
   };

@@ -162,10 +162,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string): Promise<SignUpResult> => {
     if (!supabase) return { error: 'Supabase is not configured.', signedIn: false, needsConfirmation: false };
+
+    // After SMTP is configured, confirmation emails send from support@carprise.co.uk.
+    // The redirect returns users to the driver app on the main domain.
+    const emailRedirectTo =
+      process.env.EXPO_PUBLIC_AUTH_REDIRECT_URL ?? 'https://www.carprise.co.uk/drive';
+
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
-      options: { data: { first_name: firstName.trim(), last_name: lastName.trim() } },
+      options: {
+        data: { first_name: firstName.trim(), last_name: lastName.trim() },
+        emailRedirectTo,
+      },
     });
     if (error) return { error: error.message, signedIn: false, needsConfirmation: false };
 
