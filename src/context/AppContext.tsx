@@ -53,22 +53,36 @@ const formatDate = (date?: string | null) => {
 /** Always return a readable string — never dump raw objects like "{}" into the UI. */
 function formatAuthError(error: unknown, fallback: string): string {
   if (!error) return fallback;
+
+  let raw = '';
   if (typeof error === 'string') {
-    const trimmed = error.trim();
-    if (!trimmed || trimmed === '{}' || trimmed === '[object Object]') return fallback;
-    return trimmed;
-  }
-  if (typeof error === 'object') {
+    raw = error.trim();
+  } else if (typeof error === 'object') {
     const e = error as Record<string, unknown>;
     const candidates = [e.message, e.msg, e.error_description, e.error, e.code];
     for (const value of candidates) {
-      if (typeof value === 'string') {
-        const trimmed = value.trim();
-        if (trimmed && trimmed !== '{}' && trimmed !== '[object Object]') return trimmed;
+      if (typeof value === 'string' && value.trim()) {
+        raw = value.trim();
+        break;
       }
     }
   }
-  return fallback;
+
+  if (!raw || raw === '{}' || raw === '[object Object]') return fallback;
+
+  // Map common Supabase / SMTP failures to actionable copy
+  const lower = raw.toLowerCase();
+  if (lower.includes('sending confirmation email') || lower.includes('error sending')) {
+    return 'Account could not be created because the confirmation email failed to send. Check Supabase SMTP (Resend: username must be "resend", domain verified, sender support@carprise.co.uk), or temporarily turn off "Confirm email" in Supabase Auth for the pilot.';
+  }
+  if (lower.includes('rate limit') || lower.includes('too many')) {
+    return 'Too many attempts. Please wait a minute and try again.';
+  }
+  if (lower.includes('already registered') || lower.includes('already been registered')) {
+    return 'An account with this email already exists. Sign in instead.';
+  }
+
+  return raw;
 }
 
 const tasksFor = (status: CampaignStatus, progress: number) => [
