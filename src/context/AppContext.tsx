@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { supabase } from '@/src/lib/supabase';
+import { AUTH_REDIRECT_URL, supabase } from '@/src/lib/supabase';
 import type { Campaign, CampaignStatus, Driver, Vehicle } from '@/src/types';
 
 type SaveProfileInput = { firstName: string; lastName: string; phone: string };
@@ -198,18 +198,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, firstName: string, lastName: string): Promise<SignUpResult> => {
     if (!supabase) return { error: 'Supabase is not configured.', signedIn: false, needsConfirmation: false };
 
-    // After SMTP is configured, confirmation emails send from support@carprise.co.uk.
-    // The redirect returns users to the driver app on the main domain.
-    const emailRedirectTo =
-      process.env.EXPO_PUBLIC_AUTH_REDIRECT_URL ?? 'https://www.carprise.co.uk/drive';
-
+    // Confirmation emails must redirect to the live driver app, not localhost.
+    // Also set Site URL + Redirect URLs in Supabase Auth settings to match.
     try {
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
           data: { first_name: firstName.trim(), last_name: lastName.trim() },
-          emailRedirectTo,
+          emailRedirectTo: AUTH_REDIRECT_URL,
         },
       });
 

@@ -37,18 +37,24 @@ In the **new** Supabase project (`xfukghylbjtnywhymqrm`):
 
 4. Save.
 
-## 3. Site URL and redirects
+## 3. Site URL and redirects (fixes localhost in email links)
+
+If confirmation links show `redirect_to=http://localhost:3000`, Supabase is still using the default Site URL.
 
 **Authentication → URL Configuration**
 
 | Field | Value |
 |--------|--------|
-| Site URL | `https://www.carprise.co.uk` |
-| Redirect URLs | `https://www.carprise.co.uk/drive` |
+| **Site URL** | `https://www.carprise.co.uk/drive` |
+| **Redirect URLs** (add all of these) | `https://www.carprise.co.uk/drive` |
 | | `https://www.carprise.co.uk/drive/**` |
+| | `https://www.carprise.co.uk/**` |
 | | `carprise://**` (native app later) |
-| | `http://localhost:8081/drive/**` (local web) |
-| | `exp://**` (Expo Go, optional) |
+| | `http://localhost:8081/drive/**` (local web only) |
+
+Remove `http://localhost:3000` from Site URL if it is still there.
+
+After saving, **new** signups get the correct link. Old emails already sent keep the old redirect.
 
 ## 4. Email templates (Carprise branding)
 
