@@ -43,11 +43,18 @@
         }
       ]
     ],
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "baseUrl": "/drive"
     },
     "extra": {
-      "router": {},
+      "router": {
+        "origin": "https://www.carprise.co.uk"
+      },
       "eas": {
         "projectId": "8e6b45a5-cc3f-4891-a16e-ae367e1379b5"
       }

@@ -193,7 +193,7 @@ function Field(props: any) {
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{props.label}</Text>
-      <TextInput {...props} style={styles.input} placeholderTextColor="#666A72" />
+      <TextInput {...props} style={styles.input} placeholderTextColor={C.placeholder} />
     </View>
   );
 }
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   itemCopy: { color: C.muted, fontSize: 11, lineHeight: 17, marginTop: 4, maxWidth: 280 },
   docRow: { gap: 12 },
   docTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
-  version: { color: '#555861', textAlign: 'center', fontSize: 9, letterSpacing: 1.4, marginTop: 14 },
+  version: { color: C.muted2, textAlign: 'center', fontSize: 9, letterSpacing: 1.4, marginTop: 14 },
   field: { marginBottom: 14 },
   label: { color: C.text, fontSize: 11, fontWeight: '700', marginBottom: 7 },
   input: { color: C.text, backgroundColor: C.panel2, borderWidth: 1, borderColor: C.line, borderRadius: 12, paddingHorizontal: 13, paddingVertical: 13, fontSize: 14 },

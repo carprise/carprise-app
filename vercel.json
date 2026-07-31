@@ -1,0 +1,15 @@
+{
+  "buildCommand": "npx expo export -p web",
+  "outputDirectory": "dist",
+  "devCommand": "npx expo start --web",
+  "installCommand": "npm install",
+  "framework": null,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/drive/_expo/:path*", "destination": "/_expo/:path*" },
+    { "source": "/drive/assets/:path*", "destination": "/assets/:path*" },
+    { "source": "/drive", "destination": "/index.html" },
+    { "source": "/drive/:path*", "destination": "/index.html" },
+    { "source": "/", "destination": "/index.html" }
+  ]
+}

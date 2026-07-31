@@ -2,6 +2,7 @@
   "name": "carprise",
   "version": "1.1.0",
   "private": true,
+  "main": "expo-router/entry",
   "description": "Carprise mobility commerce platform — driver app + multi-role web platform",
   "scripts": {
     "start": "expo start",
@@ -9,8 +10,11 @@
     "ios": "expo start --ios",
     "android": "expo start --android",
     "web": "expo start --web",
+    "web:drive": "expo start --web",
+    "export:web": "expo export -p web",
     "typecheck": "tsc --noEmit",
     "platform": "npm --prefix platform run dev",
+    "platform:3001": "npm --prefix platform run dev -- --port 3001",
     "platform:build": "npm --prefix platform run build",
     "platform:start": "npm --prefix platform run start",
     "dev:all": "echo Run 'npm start' for driver and 'npm run platform' for web in two terminals"

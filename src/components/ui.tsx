@@ -43,7 +43,7 @@ const s = StyleSheet.create({
   head: { gap: 8, marginBottom: 22 },
   eyebrow: { color: C.gold, fontSize: 11, fontWeight: '800', letterSpacing: 2.1 },
   title: { color: C.text, fontSize: 34, lineHeight: 38, fontWeight: '700', letterSpacing: -1.2 },
-  copy: { color: C.muted, fontSize: 15, lineHeight: 22, maxWidth: 520 },
+  copy: { color: C.muted, fontSize: 15, lineHeight: 23, maxWidth: 520 },
   card: { backgroundColor: C.panel, borderWidth: 1, borderColor: C.line, borderRadius: R.lg, padding: 18 },
   pill: { alignSelf: 'flex-start', borderRadius: 99, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 6 },
   pillText: { fontSize: 10, fontWeight: '800', letterSpacing: 1 },

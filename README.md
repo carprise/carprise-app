@@ -10,12 +10,33 @@ This monorepo contains the Phase 1–3 pilot stack:
 | **Web platform** | `platform/` | Next.js | Passenger journey, Ops admin, Brand portal |
 | **Database** | `supabase/` | Postgres + RLS | Full multi-sided schema + seed |
 
+## Domain (carprise.co.uk)
+
+Same public domain for marketing + product:
+
+| Path | App |
+|------|-----|
+| `/` | Marketing site (`carprise-website`) |
+| `/drivers` | Recruitment / apply |
+| **`/drive`** | **Driver app** (this Expo project, web + native) |
+| `/j/[code]` | Passenger journey |
+| `/ops` | Ops admin |
+| `/portal` | Brand portal |
+
+See [docs/DOMAIN.md](docs/DOMAIN.md) for Vercel rewrites and env vars.
+
 ## Quick start
 
 ### 1. Driver app
 ```bash
 npm install
 npx expo start
+```
+
+Web (serves under base path `/drive`):
+```bash
+npx expo start --web
+# → http://localhost:8081/drive
 ```
 
 ### 2. Web platform (passenger · ops · brand)

@@ -100,5 +100,5 @@ const styles = StyleSheet.create({
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: C.panel2 },
   dotActive: { width: 22, backgroundColor: C.gold },
   skip: { alignItems: 'center', padding: 14 },
-  skipText: { color: C.muted, fontWeight: '700' },
+  skipText: { color: C.gold, fontWeight: '700' },
 });

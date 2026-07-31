@@ -67,19 +67,19 @@ export default function AuthScreen() {
             <View style={styles.row}>
               <View style={styles.half}>
                 <Text style={styles.label}>First name</Text>
-                <TextInput value={firstName} onChangeText={setFirstName} style={styles.input} placeholder="Tasha" placeholderTextColor="#666A72" autoCapitalize="words" />
+                <TextInput value={firstName} onChangeText={setFirstName} style={styles.input} placeholder="Tasha" placeholderTextColor={C.placeholder} autoCapitalize="words" />
               </View>
               <View style={styles.half}>
                 <Text style={styles.label}>Last name</Text>
-                <TextInput value={lastName} onChangeText={setLastName} style={styles.input} placeholder="Card" placeholderTextColor="#666A72" autoCapitalize="words" />
+                <TextInput value={lastName} onChangeText={setLastName} style={styles.input} placeholder="Card" placeholderTextColor={C.placeholder} autoCapitalize="words" />
               </View>
             </View>
           )}
 
           <Text style={styles.label}>Email address</Text>
-          <TextInput value={email} onChangeText={setEmail} style={styles.input} placeholder="you@example.com" placeholderTextColor="#666A72" keyboardType="email-address" autoCapitalize="none" autoComplete="email" />
+          <TextInput value={email} onChangeText={setEmail} style={styles.input} placeholder="you@example.com" placeholderTextColor={C.placeholder} keyboardType="email-address" autoCapitalize="none" autoComplete="email" />
           <Text style={styles.label}>Password</Text>
-          <TextInput value={password} onChangeText={setPassword} style={styles.input} placeholder="At least 6 characters" placeholderTextColor="#666A72" secureTextEntry autoComplete={mode === 'login' ? 'current-password' : 'new-password'} />
+          <TextInput value={password} onChangeText={setPassword} style={styles.input} placeholder="At least 6 characters" placeholderTextColor={C.placeholder} secureTextEntry autoComplete={mode === 'login' ? 'current-password' : 'new-password'} />
 
           {notice ? <View style={styles.notice}><Text style={styles.noticeText}>{notice}</Text></View> : null}
           <Button label={submitting ? 'Please wait...' : mode === 'login' ? 'Sign in' : 'Create account'} onPress={submitting ? undefined : submit} />

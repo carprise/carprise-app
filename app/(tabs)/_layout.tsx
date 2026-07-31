@@ -1,1 +1,30 @@
-import {Tabs} from 'expo-router'; import {Ionicons} from '@expo/vector-icons'; import {C} from '@/src/constants/theme'; const icon=(name:any)=>(p:any)=><Ionicons name={name} {...p}/>; export default function TabsLayout(){return <Tabs screenOptions={{headerShown:false,tabBarStyle:{backgroundColor:'#0C0E12',borderTopColor:C.line,height:84,paddingTop:8},tabBarActiveTintColor:C.gold,tabBarInactiveTintColor:'#747780',tabBarLabelStyle:{fontSize:10,fontWeight:'700',paddingBottom:10}}}><Tabs.Screen name="index" options={{title:'Home',tabBarIcon:icon('home-outline')}}/><Tabs.Screen name="campaigns" options={{title:'Campaigns',tabBarIcon:icon('navigate-outline')}}/><Tabs.Screen name="earnings" options={{title:'Earnings',tabBarIcon:icon('wallet-outline')}}/><Tabs.Screen name="vehicle" options={{title:'Vehicle',tabBarIcon:icon('car-sport-outline')}}/><Tabs.Screen name="profile" options={{title:'Profile',tabBarIcon:icon('person-outline')}}/></Tabs>}
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { C } from '@/src/constants/theme';
+
+const icon = (name: any) => (p: any) => <Ionicons name={name} {...p} />;
+
+export default function TabsLayout() {
+  return (
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: '#0C0E12',
+          borderTopColor: C.line,
+          height: 84,
+          paddingTop: 8,
+        },
+        tabBarActiveTintColor: C.gold,
+        tabBarInactiveTintColor: C.muted2,
+        tabBarLabelStyle: { fontSize: 10, fontWeight: '700', paddingBottom: 10 },
+      }}
+    >
+      <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: icon('home-outline') }} />
+      <Tabs.Screen name="campaigns" options={{ title: 'Campaigns', tabBarIcon: icon('navigate-outline') }} />
+      <Tabs.Screen name="earnings" options={{ title: 'Earnings', tabBarIcon: icon('wallet-outline') }} />
+      <Tabs.Screen name="vehicle" options={{ title: 'Vehicle', tabBarIcon: icon('car-sport-outline') }} />
+      <Tabs.Screen name="profile" options={{ title: 'Profile', tabBarIcon: icon('person-outline') }} />
+    </Tabs>
+  );
+}
