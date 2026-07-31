@@ -14,45 +14,46 @@ export default function Earnings() {
   const upcomingTotal = upcoming.reduce((sum, c) => sum + c.pay, 0);
   const earnedTotal = earned.reduce((sum, c) => sum + c.pay, 0);
   const history = [...upcoming, ...earned];
-  // Illustrative commerce share for pilot messaging (not live ledger yet)
   const commerceShare = Math.round(earnedTotal * 0.15 + upcomingTotal * 0.05);
 
   return (
     <ScrollView contentContainerStyle={styles.page}>
       <ScreenTitle
-        eyebrow="EARNINGS"
+        eyebrow="Earnings"
         title="Clear. Tracked. Paid."
         copy="Campaign fees plus a share of in-journey commerce. Invitations stay separate from confirmed income."
       />
 
       <Card style={styles.total}>
-        <Text style={styles.label}>TOTAL EARNED</Text>
+        <Text style={styles.label}>Total earned</Text>
         <Text style={styles.amount}>£{earnedTotal.toFixed(2)}</Text>
-        <Text style={styles.muted}>Across {earned.length} completed campaign{earned.length === 1 ? '' : 's'}</Text>
+        <Text style={styles.muted}>
+          Across {earned.length} completed campaign{earned.length === 1 ? '' : 's'}
+        </Text>
       </Card>
 
       <View style={styles.grid}>
         <Card style={styles.metric}>
-          <Text style={styles.label}>POTENTIAL</Text>
+          <Text style={styles.label}>Potential</Text>
           <Text style={styles.small}>£{potentialTotal.toFixed(0)}</Text>
           <Text style={styles.caption}>Invitations not yet accepted</Text>
         </Card>
         <Card style={styles.metric}>
-          <Text style={styles.label}>UPCOMING</Text>
+          <Text style={styles.label}>Upcoming</Text>
           <Text style={styles.small}>£{upcomingTotal.toFixed(0)}</Text>
           <Text style={styles.caption}>Accepted, active or in review</Text>
         </Card>
         <Card style={styles.metric}>
-          <Text style={styles.label}>COMMERCE SHARE</Text>
+          <Text style={styles.label}>Commerce share</Text>
           <Text style={styles.small}>£{commerceShare.toFixed(0)}</Text>
-          <Text style={styles.caption}>Est. retail & sample bonuses</Text>
+          <Text style={styles.caption}>Est. retail and sample bonuses</Text>
         </Card>
       </View>
 
       <Card>
         <Text style={styles.pTitle}>How you earn</Text>
         <Text style={styles.muted}>
-          1. Campaign fee when you complete activation checklist and evidence is approved.{'\n'}
+          1. Campaign fee when you complete the activation checklist and evidence is approved.{'\n'}
           2. Transaction share when passengers buy products during journeys in your vehicle.{'\n'}
           3. Sample fulfilment bonus when free trials are claimed from your kit.{'\n'}
           Fares always stay with your mobility provider. Carprise only monetises the commercial layer.
@@ -61,11 +62,13 @@ export default function Earnings() {
 
       {potential.length > 0 && (
         <>
-          <Text style={styles.section}>POTENTIAL EARNINGS</Text>
+          <Text style={styles.section}>Potential earnings</Text>
           {potential.map(c => (
             <Card key={c.assignmentId} style={styles.payment}>
               <View style={styles.paymentCopy}>
-                <Text style={styles.pTitle}>{c.brand} · {c.title}</Text>
+                <Text style={styles.pTitle}>
+                  {c.brand} · {c.title}
+                </Text>
                 <Text style={styles.muted}>Accept the invitation to move this into upcoming earnings.</Text>
               </View>
               <View style={styles.right}>
@@ -77,17 +80,21 @@ export default function Earnings() {
         </>
       )}
 
-      <Text style={styles.section}>CONFIRMED & COMPLETED</Text>
+      <Text style={styles.section}>Confirmed and completed</Text>
       {history.length === 0 && (
         <Card>
           <Text style={styles.pTitle}>No confirmed earnings yet</Text>
-          <Text style={styles.muted}>Accepted campaigns will appear here, while invitations remain under potential earnings.</Text>
+          <Text style={styles.muted}>
+            Accepted campaigns will appear here, while invitations remain under potential earnings.
+          </Text>
         </Card>
       )}
       {history.map(c => (
         <Card key={c.assignmentId} style={styles.payment}>
           <View style={styles.paymentCopy}>
-            <Text style={styles.pTitle}>{c.brand} · {c.title}</Text>
+            <Text style={styles.pTitle}>
+              {c.brand} · {c.title}
+            </Text>
             <Text style={styles.muted}>
               {isCompleted(c.status) ? 'Campaign completed' : 'Due after completion and evidence approval'}
             </Text>
@@ -102,7 +109,8 @@ export default function Earnings() {
       <Card>
         <Text style={styles.pTitle}>Payment details</Text>
         <Text style={styles.muted}>
-          Payments are processed after campaign activity and final evidence checks have been approved. Add bank details under Profile.
+          Payments are processed after campaign activity and final evidence checks have been approved. Add bank
+          details under Profile.
         </Text>
       </Card>
     </ScrollView>
@@ -110,19 +118,54 @@ export default function Earnings() {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 20, paddingTop: 62, paddingBottom: 120, gap: 13 },
+  page: { padding: 20, paddingTop: 62, paddingBottom: 120, gap: 14, backgroundColor: C.bg },
   total: { padding: 24 },
-  label: { color: C.gold, fontSize: 10, fontWeight: '900', letterSpacing: 2 },
-  amount: { color: C.text, fontSize: 40, fontWeight: '700', marginTop: 12 },
-  muted: { color: C.muted, fontSize: 12, lineHeight: 19, marginTop: 5 },
+  label: {
+    color: C.champagne,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  amount: {
+    color: C.paper,
+    fontSize: 40,
+    fontWeight: '500',
+    letterSpacing: -1.2,
+    marginTop: 12,
+  },
+  muted: { color: C.muted, fontSize: 13, lineHeight: 20, marginTop: 6 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   metric: { flexGrow: 1, flexBasis: 150 },
-  small: { color: C.text, fontSize: 24, fontWeight: '700', marginTop: 8 },
-  caption: { color: C.muted, fontSize: 11, lineHeight: 16, marginTop: 6 },
-  section: { color: C.muted, fontSize: 10, fontWeight: '800', letterSpacing: 2, marginTop: 12 },
-  payment: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
+  small: {
+    color: C.paper,
+    fontSize: 24,
+    fontWeight: '500',
+    letterSpacing: -0.5,
+    marginTop: 8,
+  },
+  caption: { color: C.muted2, fontSize: 11, lineHeight: 16, marginTop: 6 },
+  section: {
+    color: C.champagne,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginTop: 8,
+  },
+  payment: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+  },
   paymentCopy: { flex: 1 },
-  right: { alignItems: 'flex-end' },
-  pTitle: { color: C.text, fontSize: 14, fontWeight: '700' },
-  pAmount: { color: C.text, fontSize: 18, fontWeight: '800', marginBottom: 7 },
+  right: { alignItems: 'flex-end', gap: 6 },
+  pTitle: { color: C.paper, fontSize: 14, fontWeight: '600' },
+  pAmount: {
+    color: C.champagne,
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: -0.3,
+  },
 });

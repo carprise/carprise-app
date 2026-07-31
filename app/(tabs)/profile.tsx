@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as DocumentPicker from 'expo-document-picker';
-import { C } from '@/src/constants/theme';
+import { C, R } from '@/src/constants/theme';
 import { Button, Card, Pill, ScreenTitle } from '@/src/components/ui';
 import { useApp } from '@/src/context/AppContext';
 
@@ -64,11 +64,14 @@ export default function Profile() {
     const last4 = accountNumber.replace(/\D/g, '').slice(-4) || accountNumber.slice(-4);
     await AsyncStorage.setItem(
       'carprise_driver_payout',
-      JSON.stringify({ sortCode: sortCode.trim(), accountNumber: last4 })
+      JSON.stringify({ sortCode: sortCode.trim(), accountNumber: last4 }),
     );
     setAccountNumber(`••••${last4}`);
     setPayoutSaved(true);
-    Alert.alert('Payout details saved', 'Details stay on-device for this pilot build. Production stores them via secure payout provider.');
+    Alert.alert(
+      'Payout details saved',
+      'Details stay on-device for this pilot build. Production stores them via secure payout provider.',
+    );
   };
 
   const uploadDoc = async (key: string) => {
@@ -98,13 +101,14 @@ export default function Profile() {
 
   const docMeta: { key: string; label: string; copy: string }[] = [
     { key: 'licence', label: 'Driving licence', copy: 'Photo or PDF of your valid UK licence' },
-    { key: 'insurance', label: 'Hire & reward insurance', copy: 'Proof of appropriate cover' },
+    { key: 'insurance', label: 'Hire and reward insurance', copy: 'Proof of appropriate cover' },
     { key: 'phv', label: 'PHV / private hire licence', copy: 'If required in your city' },
   ];
 
   return (
     <ScrollView contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled">
-      <ScreenTitle eyebrow="PROFILE" title="Your driver account." />
+      <ScreenTitle eyebrow="Profile" title="Your driver account." />
+
       <Card style={styles.identity}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{driver?.name?.[0] ?? 'D'}</Text>
@@ -114,7 +118,7 @@ export default function Profile() {
         </Text>
         <Text style={styles.email}>{driver?.email}</Text>
         <View style={styles.rating}>
-          <Ionicons name="star" color={C.gold} size={14} />
+          <Ionicons name="star" color={C.champagne} size={14} />
           <Text style={styles.ratingText}>{driver?.rating.toFixed(1) ?? '5.0'} driver rating</Text>
         </View>
       </Card>
@@ -126,13 +130,20 @@ export default function Profile() {
         <Button label={saving ? 'Saving...' : 'Save personal details'} onPress={saving ? undefined : save} />
       </Card>
 
-      <Text style={styles.section}>PAYOUT DETAILS</Text>
+      <Text style={styles.section}>Payout details</Text>
       <Card>
         <Text style={styles.itemTitle}>Bank transfer</Text>
         <Text style={styles.itemCopy}>
-          Campaign payments and revenue share after evidence approval. {payoutSaved ? 'Details on file.' : 'Add details to receive pilot payouts.'}
+          Campaign payments and revenue share after evidence approval.{' '}
+          {payoutSaved ? 'Details on file.' : 'Add details to receive pilot payouts.'}
         </Text>
-        <Field label="Sort code" value={sortCode} onChangeText={setSortCode} placeholder="00-00-00" keyboardType="numbers-and-punctuation" />
+        <Field
+          label="Sort code"
+          value={sortCode}
+          onChangeText={setSortCode}
+          placeholder="00-00-00"
+          keyboardType="numbers-and-punctuation"
+        />
         <Field
           label="Account number"
           value={accountNumber}
@@ -143,8 +154,8 @@ export default function Profile() {
         <Button label="Save payout details" secondary onPress={savePayout} />
       </Card>
 
-      <Text style={styles.section}>DOCUMENTS</Text>
-      {docMeta.map((doc) => (
+      <Text style={styles.section}>Documents</Text>
+      {docMeta.map(doc => (
         <Card key={doc.key} style={styles.docRow}>
           <View style={{ flex: 1 }}>
             <View style={styles.docTop}>
@@ -160,31 +171,41 @@ export default function Profile() {
       ))}
 
       <Card style={styles.toggle}>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={styles.itemTitle}>Campaign notifications</Text>
           <Text style={styles.itemCopy}>Invitations, deadlines and payments</Text>
         </View>
-        <Switch value={notifications} onValueChange={setNotifications} trackColor={{ true: C.violet }} />
+        <Switch
+          value={notifications}
+          onValueChange={setNotifications}
+          trackColor={{ true: C.violet, false: C.panel3 }}
+          thumbColor={C.paper}
+        />
       </Card>
 
       <Card>
         <View style={styles.itemLeft}>
-          <Ionicons name="shield-checkmark-outline" size={20} color={C.gold} />
-          <View>
+          <Ionicons name="shield-checkmark-outline" size={20} color={C.champagne} />
+          <View style={{ flex: 1 }}>
             <Text style={styles.itemTitle}>Privacy and security</Text>
             <Text style={styles.itemCopy}>
-              Consent-led design, data minimisation and row-level security. You control journey commerce participation.
+              Consent-led design, data minimisation and row-level security. You control journey commerce
+              participation.
             </Text>
           </View>
         </View>
       </Card>
 
-      <Button label="Replay onboarding" secondary onPress={async () => {
-        await AsyncStorage.removeItem('carprise_onboarding_complete');
-        router.replace('/onboarding' as any);
-      }} />
+      <Button
+        label="Replay onboarding"
+        secondary
+        onPress={async () => {
+          await AsyncStorage.removeItem('carprise_onboarding_complete');
+          router.replace('/onboarding' as any);
+        }}
+      />
       <Button label="Sign out" secondary onPress={logout} />
-      <Text style={styles.version}>CARPRISE DRIVER · VERSION 1.1.0 · FULL PLATFORM</Text>
+      <Text style={styles.version}>CARPRISE DRIVER · VERSION 1.1.0</Text>
     </ScrollView>
   );
 }
@@ -199,23 +220,67 @@ function Field(props: any) {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 20, paddingTop: 62, paddingBottom: 120, gap: 13 },
+  page: { padding: 20, paddingTop: 62, paddingBottom: 120, gap: 14, backgroundColor: C.bg },
   identity: { alignItems: 'center', paddingVertical: 26 },
-  avatar: { width: 70, height: 70, borderRadius: 35, backgroundColor: C.violet + '33', alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: C.text, fontSize: 27, fontWeight: '800' },
-  name: { color: C.text, fontSize: 20, fontWeight: '700', marginTop: 13 },
+  avatar: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: C.violet + '28',
+    borderWidth: 1,
+    borderColor: C.violet + '55',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: { color: C.paper, fontSize: 28, fontWeight: '500' },
+  name: {
+    color: C.paper,
+    fontSize: 20,
+    fontWeight: '500',
+    marginTop: 14,
+    letterSpacing: -0.3,
+  },
   email: { color: C.muted, marginTop: 4 },
-  rating: { flexDirection: 'row', gap: 5, marginTop: 12 },
-  ratingText: { color: C.gold, fontSize: 12, fontWeight: '700' },
-  section: { color: C.muted, fontSize: 10, fontWeight: '800', letterSpacing: 2, marginTop: 10 },
-  toggle: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  itemLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  itemTitle: { color: C.text, fontSize: 14, fontWeight: '700' },
-  itemCopy: { color: C.muted, fontSize: 11, lineHeight: 17, marginTop: 4, maxWidth: 280 },
+  rating: { flexDirection: 'row', gap: 5, marginTop: 12, alignItems: 'center' },
+  ratingText: { color: C.champagne, fontSize: 12, fontWeight: '700' },
+  section: {
+    color: C.champagne,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginTop: 6,
+  },
+  toggle: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
+  itemLeft: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  itemTitle: { color: C.paper, fontSize: 14, fontWeight: '600' },
+  itemCopy: { color: C.muted, fontSize: 12, lineHeight: 18, marginTop: 4 },
   docRow: { gap: 12 },
   docTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
-  version: { color: C.muted2, textAlign: 'center', fontSize: 9, letterSpacing: 1.4, marginTop: 14 },
+  version: {
+    color: C.muted2,
+    textAlign: 'center',
+    fontSize: 9,
+    letterSpacing: 1.6,
+    marginTop: 8,
+  },
   field: { marginBottom: 14 },
-  label: { color: C.text, fontSize: 11, fontWeight: '700', marginBottom: 7 },
-  input: { color: C.text, backgroundColor: C.panel2, borderWidth: 1, borderColor: C.line, borderRadius: 12, paddingHorizontal: 13, paddingVertical: 13, fontSize: 14 },
+  label: {
+    color: C.champagne,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.3,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  input: {
+    color: C.paper,
+    backgroundColor: C.panel2,
+    borderWidth: 1,
+    borderColor: C.line,
+    borderRadius: R.md,
+    paddingHorizontal: 13,
+    paddingVertical: 13,
+    fontSize: 14,
+  },
 });
