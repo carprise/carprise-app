@@ -7,7 +7,8 @@
 | `https://www.carprise.co.uk` | Marketing website (`carprise-website`) |
 | `https://www.carprise.co.uk/drivers` | Driver recruitment / apply |
 | `https://www.carprise.co.uk/drive` | **Driver app** (Expo web, proxied) |
-| `https://www.carprise.co.uk/j/[code]` | Passenger experience (native hospitality UI) |
+| `https://www.carprise.co.uk/j` | Passenger entry (any code / guest cabin) |
+| `https://www.carprise.co.uk/j/[code]` | Passenger cabin for that code (any code works) |
 | `https://www.carprise.co.uk/ops` | Ops admin |
 | `https://www.carprise.co.uk/portal` | Brand portal |
 
