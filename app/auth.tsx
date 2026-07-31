@@ -82,16 +82,16 @@ export default function AuthScreen() {
 
           <View style={styles.kicker}>
             <StatusDot />
-            <Text style={styles.eyebrow}>Driver network · London pilot</Text>
+            <Text style={styles.eyebrow}>Driver operations</Text>
           </View>
 
           <Text style={styles.title}>
-            {mode === 'login' ? 'Welcome back.' : 'Join the network.'}
+            {mode === 'login' ? 'Welcome back.' : 'Join operations.'}
           </Text>
           <Text style={styles.copy}>
             {mode === 'login'
-              ? 'Sign in to manage campaigns, evidence and earnings.'
-              : 'Create your secure driver account to join the founding network.'}
+              ? 'Sign in for campaigns, stock, routes and daily performance.'
+              : 'Create your driver operations account for the founding network.'}
           </Text>
 
           {mode === 'signup' && (

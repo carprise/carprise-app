@@ -42,14 +42,14 @@ export function Pill({
     tone === 'violet'
       ? C.violet
       : tone === 'green'
-        ? C.acid
+        ? C.success
         : tone === 'warning'
           ? C.warning
           : tone === 'muted'
             ? C.muted2
             : C.champagne;
   return (
-    <View style={[s.pill, { backgroundColor: color + '18', borderColor: color + '55' }]}>
+    <View style={[s.pill, { borderColor: color + '40', backgroundColor: color + '12' }]}>
       <Text style={[s.pillText, { color }]}>{children}</Text>
     </View>
   );
@@ -66,10 +66,9 @@ export function campaignStatus(status: CampaignStatus) {
 
 export function StatusPill({ status }: { status: CampaignStatus }) {
   const meta = campaignStatus(status);
-  return <Pill tone={meta.tone}>{meta.label.toUpperCase()}</Pill>;
+  return <Pill tone={meta.tone}>{meta.label}</Pill>;
 }
 
-/** Primary = paper (website), secondary = ghost outline */
 export function Button({
   label,
   onPress,
@@ -88,7 +87,7 @@ export function Button({
       style={({ pressed }) => [
         s.button,
         secondary ? s.buttonGhost : s.buttonPrimary,
-        (pressed || disabled) && { opacity: disabled ? 0.4 : 0.82 },
+        (pressed || disabled) && { opacity: disabled ? 0.4 : 0.88 },
       ]}
     >
       <Text style={secondary ? s.buttonGhostText : s.buttonPrimaryText}>{label}</Text>
@@ -100,56 +99,74 @@ export function StatusDot({ live = true }: { live?: boolean }) {
   return <View style={[s.dot, live && s.dotLive]} />;
 }
 
+export function MetricTile({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+}) {
+  return (
+    <View style={s.metric}>
+      <Text style={s.metricLabel}>{label}</Text>
+      <Text style={s.metricValue}>{value}</Text>
+      {hint ? <Text style={s.metricHint}>{hint}</Text> : null}
+    </View>
+  );
+}
+
 const s = StyleSheet.create({
-  head: { gap: 10, marginBottom: 24 },
+  head: { gap: 10, marginBottom: 26 },
   eyebrow: {
     color: C.champagne,
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 2.4,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.8,
     textTransform: 'uppercase',
   },
   title: {
     color: C.paper,
-    fontSize: 32,
-    lineHeight: 36,
-    fontWeight: '500',
-    letterSpacing: -1.1,
+    fontSize: 30,
+    lineHeight: 34,
+    fontWeight: '400',
+    letterSpacing: -0.8,
   },
   copy: {
     color: C.muted,
     fontSize: 15,
-    lineHeight: 24,
-    maxWidth: 520,
-    marginTop: 2,
+    lineHeight: 23,
+    maxWidth: 400,
   },
   card: {
     backgroundColor: C.panel,
     borderWidth: 1,
     borderColor: C.line,
     borderRadius: R.lg,
-    padding: 18,
+    padding: 20,
   },
   pill: {
     alignSelf: 'flex-start',
     borderRadius: R.pill,
     borderWidth: 1,
-    paddingHorizontal: 10,
+    paddingHorizontal: 11,
     paddingVertical: 5,
   },
   pillText: {
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 1.2,
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
   },
   button: {
     width: '100%',
-    minHeight: 52,
+    minHeight: 50,
     borderRadius: R.md,
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     borderWidth: 1,
   },
   buttonPrimary: {
@@ -158,9 +175,9 @@ const s = StyleSheet.create({
   },
   buttonPrimaryText: {
     color: C.ink,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.4,
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.2,
   },
   buttonGhost: {
     backgroundColor: 'transparent',
@@ -168,21 +185,47 @@ const s = StyleSheet.create({
   },
   buttonGhostText: {
     color: C.paper,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.4,
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.2,
   },
   dot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
     backgroundColor: C.muted2,
   },
   dotLive: {
-    backgroundColor: C.acid,
-    shadowColor: C.acid,
-    shadowOpacity: 0.9,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
+    backgroundColor: C.success,
+  },
+  metric: {
+    flex: 1,
+    minWidth: 96,
+    backgroundColor: C.panel,
+    borderWidth: 1,
+    borderColor: C.line,
+    borderRadius: R.lg,
+    paddingVertical: 16,
+    paddingHorizontal: 14,
+  },
+  metricLabel: {
+    color: C.muted2,
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  metricValue: {
+    color: C.paper,
+    fontSize: 22,
+    fontWeight: '400',
+    letterSpacing: -0.5,
+    marginTop: 8,
+  },
+  metricHint: {
+    color: C.muted,
+    fontSize: 11,
+    marginTop: 6,
+    lineHeight: 15,
   },
 });

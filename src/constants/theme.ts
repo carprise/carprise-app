@@ -1,45 +1,53 @@
 /**
- * Carprise brand tokens, aligned with carprise.co.uk (globals.css)
+ * Driver / B2B app theme
+ * Premium mobility instrument panel — not budget consumer UI.
+ * Aligned with carprise.co.uk tokens, refined for operational use.
  */
 export const C = {
-  // Surfaces
-  bg: '#08090B', // --ink
-  bgSoft: '#0D0E11',
-  panel: '#101216', // --ink-soft
-  panel2: '#131519',
-  panel3: '#1A1C22',
+  bg: '#060708',
+  bgSoft: '#0A0B0E',
+  panel: '#0E1014',
+  panel2: '#14171D',
+  panel3: '#1C2028',
+  elevated: '#12151C',
 
-  // Text
-  text: '#F3F0E8', // --paper
-  paper: '#F3F0E8',
-  muted: '#B4B6BB',
-  muted2: '#8A8C92',
-  placeholder: '#6F7278',
+  paper: '#F2EDE4',
+  text: '#F2EDE4',
+  muted: '#9A9DA5',
+  muted2: '#6E727A',
+  placeholder: '#5C6068',
 
-  // Brand accents
-  gold: '#E8CBA1', // --champagne
-  gold2: '#D4B48A',
-  champagne: '#E8CBA1',
-  violet: '#8B5CFF', // --violet
-  acid: '#C8FF62', // --acid (status / live)
+  champagne: '#D4B896',
+  gold: '#D4B896',
+  gold2: '#B8956A',
+  violet: '#7B6CF0',
+  acid: '#A8D96A',
 
-  // UI
-  line: 'rgba(255,255,255,0.14)',
-  lineStrong: 'rgba(255,255,255,0.22)',
-  success: '#C8FF62',
-  warning: '#E8CBA1',
-  danger: '#EE7A7A',
+  line: 'rgba(255,255,255,0.08)',
+  lineStrong: 'rgba(255,255,255,0.14)',
+  hairline: 'rgba(212,184,150,0.22)',
 
-  // On light paper (if used)
-  ink: '#08090B',
-  inkMuted: '#5D5C58',
+  success: '#A8D96A',
+  warning: '#D4B896',
+  danger: '#D97A7A',
+
+  ink: '#060708',
+  inkMuted: '#5A5750',
 };
 
-// Website buttons are more squared; keep modest radius for mobile comfort
 export const R = {
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 16,
-  pill: 99,
+  sm: 6,
+  md: 10,
+  lg: 14,
+  xl: 20,
+  pill: 999,
+};
+
+/** Shared layout rhythm */
+export const Space = {
+  pageX: 22,
+  pageTop: 56,
+  pageBottom: 110,
+  section: 28,
+  card: 18,
 };

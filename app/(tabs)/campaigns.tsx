@@ -15,9 +15,9 @@ export default function Campaigns() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.champagne} />}
     >
       <ScreenTitle
-        eyebrow="Driver campaigns"
-        title="Your journeys."
-        copy="Invitations, accepted work, live activity and completed campaigns in one place."
+        eyebrow="Commercial work"
+        title="Campaigns & activations."
+        copy="Brand work assigned to your vehicle: invitations, live activity, evidence and completion."
       />
 
       {list.length === 0 && (

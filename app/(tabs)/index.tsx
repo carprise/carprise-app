@@ -1,229 +1,254 @@
 import { RefreshControl, ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { C, R } from '@/src/constants/theme';
-import { Card, StatusPill, StatusDot } from '@/src/components/ui';
+import { C, R, Space } from '@/src/constants/theme';
+import { Card, StatusPill, StatusDot, MetricTile } from '@/src/components/ui';
 import { useApp } from '@/src/context/AppContext';
+import { formatMinutes, getDailyReport } from '@/src/data/dailyReport';
 
-export default function Home() {
-  const { driver, campaigns, refreshing, refresh } = useApp();
-  const active = campaigns.find(c => c.status === 'active' || c.status === 'accepted' || c.status === 'review');
+export default function TodayScreen() {
+  const { driver, vehicle, campaigns, refreshing, refresh } = useApp();
+  const active = campaigns.find(
+    c => c.status === 'active' || c.status === 'accepted' || c.status === 'review',
+  );
   const invited = campaigns.find(c => c.status === 'invited');
-  const potential = campaigns.filter(c => c.status === 'invited').reduce((sum, c) => sum + c.pay, 0);
-  const upcoming = campaigns.filter(c => c.status === 'accepted' || c.status === 'active' || c.status === 'review').reduce((sum, c) => sum + c.pay, 0);
-  const firstName = driver?.name ?? 'Driver';
+  const firstName = driver?.firstName || driver?.name || 'Driver';
+  const report = getDailyReport(driver?.id);
 
   return (
     <ScrollView
       style={styles.screen}
       contentContainerStyle={styles.page}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.champagne} />}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.champagne} />
+      }
     >
       <View style={styles.top}>
-        <View>
-          <Text style={styles.hello}>Welcome back</Text>
-          <Text style={styles.name}>{firstName}.</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.product}>Driver operations</Text>
+          <Text style={styles.hello}>Good to see you, {firstName}</Text>
+          <Text style={styles.date}>{report.dateLabel}</Text>
         </View>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{firstName[0]}</Text>
-          <View style={styles.dotWrap}>
-            <StatusDot />
-          </View>
+        <View style={styles.statusChip}>
+          <StatusDot live={Boolean(driver?.verified)} />
+          <Text style={styles.statusText}>
+            {driver?.verified ? 'Vehicle verified' : 'Awaiting review'}
+          </Text>
         </View>
       </View>
 
+      <Text style={styles.section}>Today&apos;s report</Text>
+      <View style={styles.metrics}>
+        <MetricTile label="Distance" value={`${report.distanceKm} km`} hint="Travelled today" />
+        <MetricTile label="Journeys" value={String(report.journeys)} hint={report.topArea} />
+      </View>
+      <View style={[styles.metrics, { marginTop: 10 }]}>
+        <MetricTile
+          label="On road"
+          value={formatMinutes(report.activeMinutes)}
+          hint={`${report.idleShare}% idle`}
+        />
+        <MetricTile
+          label="Est. earn"
+          value={`£${report.estimatedEarnings.toFixed(0)}`}
+          hint={`${report.campaignHours}h campaign time`}
+        />
+      </View>
+      <Pressable onPress={() => router.push('/(tabs)/report')}>
+        <Text style={styles.inlineLink}>Full routes report →</Text>
+      </Pressable>
+
+      <Text style={styles.section}>Active work</Text>
       {active ? (
-        <Card style={styles.hero}>
-          <View style={styles.heroTop}>
-            <StatusPill status={active.status} />
-            <Ionicons name="radio" size={20} color={C.violet} />
-          </View>
-          <Text style={styles.brand}>{active.brand}</Text>
-          <Text style={styles.campaign}>{active.title}</Text>
-          <Text style={styles.area}>
-            {active.area} · {active.end}
-          </Text>
-          <View style={styles.progress}>
-            <View style={[styles.progressFill, { width: `${active.progress}%` }]} />
-          </View>
-          <View style={styles.heroBottom}>
+        <Pressable onPress={() => router.push(`/campaign/${active.id}`)}>
+          <Card style={styles.workCard}>
+            <View style={styles.workTop}>
+              <StatusPill status={active.status} />
+              <Text style={styles.workPay}>£{active.pay.toFixed(0)}</Text>
+            </View>
+            <Text style={styles.workBrand}>{active.brand}</Text>
+            <Text style={styles.workTitle}>{active.title}</Text>
+            <Text style={styles.workMeta}>
+              {active.area} · ends {active.end}
+            </Text>
+            <View style={styles.progress}>
+              <View style={[styles.progressFill, { width: `${active.progress}%` }]} />
+            </View>
             <Text style={styles.progressText}>{active.progress}% complete</Text>
-            <Pressable onPress={() => router.push(`/campaign/${active.id}`)}>
-              <Text style={styles.link}>Open campaign →</Text>
-            </Pressable>
-          </View>
-        </Card>
+          </Card>
+        </Pressable>
       ) : (
-        <Card style={styles.empty}>
-          <Ionicons name="navigate-outline" size={28} color={C.champagne} />
-          <Text style={styles.emptyTitle}>No live campaign yet.</Text>
+        <Card>
+          <Text style={styles.emptyTitle}>No active campaign</Text>
           <Text style={styles.emptyCopy}>
-            New invitations will appear here as soon as the Carprise team assigns one to your account.
+            When Carprise assigns commercial work, it will appear here with checklist and evidence
+            steps.
           </Text>
         </Card>
       )}
-
-      <Text style={styles.section}>Your account</Text>
-      <View style={styles.stats}>
-        <Card style={styles.stat}>
-          <Text style={styles.statValue}>£{potential.toFixed(0)}</Text>
-          <Text style={styles.statLabel}>Potential</Text>
-        </Card>
-        <Card style={styles.stat}>
-          <Text style={styles.statValue}>£{upcoming.toFixed(0)}</Text>
-          <Text style={styles.statLabel}>Upcoming</Text>
-        </Card>
-      </View>
 
       {invited && (
         <Pressable onPress={() => router.push(`/campaign/${invited.id}`)}>
           <Card style={styles.invite}>
             <View style={styles.inviteIcon}>
-              <Ionicons name="sparkles" color={C.champagne} size={20} />
+              <Ionicons name="mail-open-outline" size={18} color={C.champagne} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.inviteTop}>New invitation</Text>
+              <Text style={styles.inviteLabel}>New invitation</Text>
               <Text style={styles.inviteTitle}>
                 {invited.brand}: {invited.title}
               </Text>
-              <Text style={styles.inviteCopy}>
-                Earn £{invited.pay.toFixed(0)} · Starts {invited.start}
-              </Text>
+              <Text style={styles.inviteMeta}>£{invited.pay.toFixed(0)} · starts {invited.start}</Text>
             </View>
-            <Ionicons name="chevron-forward" color={C.muted2} size={18} />
+            <Ionicons name="chevron-forward" size={16} color={C.muted2} />
           </Card>
         </Pressable>
       )}
 
-      {!driver?.verified && (
-        <>
-          <Text style={styles.section}>Next action</Text>
-          <Card>
-            <Text style={styles.actionTitle}>Complete your vehicle profile</Text>
-            <Text style={styles.actionCopy}>
-              Add your vehicle details and photos so the Carprise team can review your eligibility.
-            </Text>
-            <Pressable onPress={() => router.push('/(tabs)/vehicle')} style={styles.actionButton}>
-              <Text style={styles.actionButtonText}>Complete vehicle profile</Text>
-            </Pressable>
-          </Card>
-        </>
-      )}
-
-      <Text style={styles.section}>How Carprise works</Text>
-      <Card>
-        <Text style={styles.actionTitle}>You drive. We commercialise the journey.</Text>
-        <Text style={styles.actionCopy}>
-          Fares stay with your mobility platform. Carprise adds campaigns, samples and cashless retail
-          in-vehicle, then shares the value with you.
-        </Text>
+      <Text style={styles.section}>Vehicle</Text>
+      <Card style={styles.vehicleRow}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.vehicleName}>
+            {vehicle
+              ? `${vehicle.year} ${vehicle.make} ${vehicle.model}`.trim()
+              : 'No vehicle on file'}
+          </Text>
+          <Text style={styles.vehicleMeta}>
+            {vehicle?.registration || 'Add registration'}
+            {vehicle?.verificationStatus === 'verified' ? ' · Verified' : ' · Pending review'}
+          </Text>
+        </View>
+        <Pressable onPress={() => router.push('/(tabs)/vehicle')} style={styles.smallBtn}>
+          <Text style={styles.smallBtnText}>Manage</Text>
+        </Pressable>
       </Card>
+
+      <Text style={styles.footerNote}>
+        This is the driver operations app: work, stock, routes and earnings. Passenger comfort,
+        music and ordering live in the separate customer experience.
+      </Text>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.bg },
-  page: { flexGrow: 1, padding: 20, paddingTop: 62, paddingBottom: 120, gap: 16, backgroundColor: C.bg },
-  top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  hello: {
+  page: {
+    flexGrow: 1,
+    paddingHorizontal: Space.pageX,
+    paddingTop: Space.pageTop,
+    paddingBottom: Space.pageBottom,
+    gap: 12,
+  },
+  top: { marginBottom: 8, gap: 14 },
+  product: {
     color: C.champagne,
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 2.2,
-    textTransform: 'uppercase',
-  },
-  name: {
-    color: C.paper,
-    fontSize: 34,
-    fontWeight: '500',
-    letterSpacing: -1.1,
-    marginTop: 4,
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: C.panel2,
-    borderWidth: 1,
-    borderColor: C.line,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: { color: C.paper, fontWeight: '600', fontSize: 18 },
-  dotWrap: { position: 'absolute', right: 1, bottom: 1 },
-  hero: { padding: 22, backgroundColor: C.panel },
-  heroTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  brand: {
-    color: C.champagne,
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 2.4,
-    textTransform: 'uppercase',
-    marginTop: 28,
-  },
-  campaign: {
-    color: C.paper,
-    fontSize: 26,
-    fontWeight: '500',
-    letterSpacing: -0.6,
-    marginTop: 8,
-  },
-  area: { color: C.muted, marginTop: 8, fontSize: 13 },
-  progress: { height: 2, backgroundColor: C.line, marginTop: 28 },
-  progressFill: { height: 2, backgroundColor: C.violet },
-  heroBottom: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
-  progressText: { color: C.muted2, fontSize: 11 },
-  link: { color: C.champagne, fontSize: 11, fontWeight: '700', letterSpacing: 0.3 },
-  empty: { alignItems: 'center', paddingVertical: 32 },
-  emptyTitle: { color: C.paper, fontSize: 20, fontWeight: '500', marginTop: 14, letterSpacing: -0.4 },
-  emptyCopy: { color: C.muted, lineHeight: 21, textAlign: 'center', marginTop: 8, maxWidth: 280 },
-  section: {
-    color: C.champagne,
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    marginTop: 8,
-  },
-  stats: { flexDirection: 'row', gap: 12 },
-  stat: { flex: 1 },
-  statValue: { color: C.paper, fontSize: 24, fontWeight: '500', letterSpacing: -0.5 },
-  statLabel: {
-    color: C.muted2,
-    fontSize: 10,
-    marginTop: 6,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  invite: { flexDirection: 'row', alignItems: 'center', gap: 13 },
-  inviteIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: R.md,
-    backgroundColor: C.champagne + '14',
-    borderWidth: 1,
-    borderColor: C.champagne + '33',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inviteTop: {
-    color: C.champagne,
-    fontSize: 9,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '600',
     letterSpacing: 1.6,
     textTransform: 'uppercase',
   },
-  inviteTitle: { color: C.paper, fontSize: 15, fontWeight: '600', marginTop: 4 },
-  inviteCopy: { color: C.muted, fontSize: 12, marginTop: 4 },
-  actionTitle: { color: C.paper, fontSize: 18, fontWeight: '500', letterSpacing: -0.3 },
-  actionCopy: { color: C.muted, lineHeight: 21, marginTop: 8 },
-  actionButton: {
-    marginTop: 18,
-    backgroundColor: C.paper,
-    borderRadius: R.md,
-    padding: 15,
-    alignItems: 'center',
+  hello: {
+    color: C.paper,
+    fontSize: 28,
+    fontWeight: '400',
+    letterSpacing: -0.6,
+    marginTop: 6,
   },
-  actionButtonText: { color: C.ink, fontWeight: '700', fontSize: 12, letterSpacing: 0.3 },
+  date: { color: C.muted, fontSize: 14, marginTop: 4 },
+  statusChip: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderColor: C.line,
+    borderRadius: R.pill,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    backgroundColor: C.panel,
+  },
+  statusText: { color: C.muted, fontSize: 12, fontWeight: '500' },
+  section: {
+    color: C.muted2,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+    marginTop: 18,
+    marginBottom: 4,
+  },
+  metrics: { flexDirection: 'row', gap: 10 },
+  inlineLink: {
+    color: C.champagne,
+    fontSize: 13,
+    fontWeight: '600',
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  workCard: { gap: 4 },
+  workTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  workPay: { color: C.champagne, fontSize: 18, fontWeight: '500' },
+  workBrand: {
+    color: C.champagne,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginTop: 16,
+  },
+  workTitle: {
+    color: C.paper,
+    fontSize: 22,
+    fontWeight: '400',
+    letterSpacing: -0.4,
+    marginTop: 4,
+  },
+  workMeta: { color: C.muted, fontSize: 13, marginTop: 6 },
+  progress: { height: 2, backgroundColor: C.line, marginTop: 18 },
+  progressFill: { height: 2, backgroundColor: C.violet },
+  progressText: { color: C.muted2, fontSize: 11, marginTop: 8 },
+  emptyTitle: { color: C.paper, fontSize: 17, fontWeight: '500' },
+  emptyCopy: { color: C.muted, lineHeight: 21, marginTop: 8 },
+  invite: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderColor: C.hairline,
+  },
+  inviteIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: R.md,
+    borderWidth: 1,
+    borderColor: C.hairline,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inviteLabel: {
+    color: C.champagne,
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  inviteTitle: { color: C.paper, fontSize: 15, fontWeight: '500', marginTop: 3 },
+  inviteMeta: { color: C.muted, fontSize: 12, marginTop: 3 },
+  vehicleRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  vehicleName: { color: C.paper, fontSize: 15, fontWeight: '500' },
+  vehicleMeta: { color: C.muted, fontSize: 12, marginTop: 4 },
+  smallBtn: {
+    borderWidth: 1,
+    borderColor: C.lineStrong,
+    borderRadius: R.md,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  smallBtnText: { color: C.paper, fontSize: 12, fontWeight: '600' },
+  footerNote: {
+    color: C.muted2,
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: 20,
+  },
 });
