@@ -1,19 +1,45 @@
-// Higher-contrast dark theme for readability on small screens.
+/**
+ * Carprise brand tokens — aligned with carprise.co.uk (globals.css)
+ */
 export const C = {
-  bg: '#07080A',
-  panel: '#12151C',
-  panel2: '#1B1F28',
-  text: '#FAF7F1',
-  muted: '#C8CAD1', // secondary body copy (was #9B9DA4 — too low contrast)
-  muted2: '#A8ABB4', // captions / meta only
-  placeholder: '#9AA0AB',
-  gold: '#EED08A', // slightly brighter than before for labels
-  gold2: '#C4A055',
-  violet: '#A58CF0',
+  // Surfaces
+  bg: '#08090B', // --ink
+  bgSoft: '#0D0E11',
+  panel: '#101216', // --ink-soft
+  panel2: '#131519',
+  panel3: '#1A1C22',
+
+  // Text
+  text: '#F3F0E8', // --paper
+  paper: '#F3F0E8',
+  muted: '#B4B6BB',
+  muted2: '#8A8C92',
+  placeholder: '#6F7278',
+
+  // Brand accents
+  gold: '#E8CBA1', // --champagne
+  gold2: '#D4B48A',
+  champagne: '#E8CBA1',
+  violet: '#8B5CFF', // --violet
+  acid: '#C8FF62', // --acid (status / live)
+
+  // UI
   line: 'rgba(255,255,255,0.14)',
-  success: '#86DDAA',
-  warning: '#F5C57A',
-  danger: '#F08A8A',
+  lineStrong: 'rgba(255,255,255,0.22)',
+  success: '#C8FF62',
+  warning: '#E8CBA1',
+  danger: '#EE7A7A',
+
+  // On light paper (if used)
+  ink: '#08090B',
+  inkMuted: '#5D5C58',
 };
 
-export const R = { sm: 12, md: 18, lg: 26, xl: 34 };
+// Website buttons are more squared; keep modest radius for mobile comfort
+export const R = {
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
+  pill: 99,
+};

@@ -10,14 +10,22 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#0C0E12',
+          backgroundColor: C.bg,
           borderTopColor: C.line,
+          borderTopWidth: 1,
           height: 84,
-          paddingTop: 8,
+          paddingTop: 10,
+          paddingBottom: 12,
         },
-        tabBarActiveTintColor: C.gold,
-        tabBarInactiveTintColor: C.muted2,
-        tabBarLabelStyle: { fontSize: 10, fontWeight: '700', paddingBottom: 10 },
+        tabBarActiveTintColor: C.champagne,
+        tabBarInactiveTintColor: 'rgba(255,255,255,0.42)',
+        tabBarLabelStyle: {
+          fontSize: 9,
+          fontWeight: '700',
+          letterSpacing: 0.8,
+          textTransform: 'uppercase',
+          paddingBottom: 6,
+        },
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: icon('home-outline') }} />

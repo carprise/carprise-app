@@ -35,19 +35,33 @@ export default function Index() {
   }, [loading, session]);
 
   return (
-    <LinearGradient colors={['#07080A', '#111018', '#07080A']} style={styles.wrap}>
+    <LinearGradient colors={[C.bg, C.bgSoft, C.bg]} style={styles.wrap}>
       <Image source={require('@/assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.copy}>DRIVER NETWORK</Text>
       <View style={styles.line} />
-      {(loading || routing) && <ActivityIndicator color={C.gold} style={styles.loader} />}
+      {(loading || routing) && <ActivityIndicator color={C.champagne} style={styles.loader} />}
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  logo: { width: 290, height: 130 },
-  copy: { color: C.gold, fontWeight: '800', fontSize: 11, letterSpacing: 4, marginTop: 12 },
-  line: { width: 42, height: 1, backgroundColor: C.violet, marginTop: 22 },
+  wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: C.bg },
+  logo: { width: 260, height: 110 },
+  copy: {
+    color: C.champagne,
+    fontWeight: '700',
+    fontSize: 10,
+    letterSpacing: 3.5,
+    marginTop: 14,
+  },
+  line: {
+    width: 48,
+    height: 1,
+    backgroundColor: C.violet,
+    marginTop: 22,
+    shadowColor: C.violet,
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+  },
   loader: { marginTop: 28 },
 });
