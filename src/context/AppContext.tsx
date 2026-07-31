@@ -81,7 +81,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const [profileResult, vehicleResult, assignmentResult] = await Promise.all([
       supabase.from('profiles').select('id, first_name, last_name, phone, rating').eq('id', userId).maybeSingle(),
-      supabase.from('vehicles').select('id, make, model, year, colour, registration, verification_status').eq('driver_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+      supabase.from('vehicles').select('id, make, model, year, colour, registration, verification_status, journey_code, hardware_status, city').eq('driver_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle(),
       supabase.from('campaign_assignments').select('id, status, progress, campaign:campaigns(id, brand, title, area, starts_on, ends_on, payment_pence)').eq('driver_id', userId).order('created_at', { ascending: false }),
     ]);
 
@@ -111,6 +111,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       colour: vehicleRow.colour ?? '',
       registration: vehicleRow.registration ?? '',
       verificationStatus: vehicleRow.verification_status ?? 'pending',
+      journeyCode: vehicleRow.journey_code ?? undefined,
+      hardwareStatus: vehicleRow.hardware_status ?? undefined,
+      city: vehicleRow.city ?? undefined,
     } : null);
 
     const rows = assignmentResult.data ?? [];

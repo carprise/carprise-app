@@ -41,6 +41,14 @@ export default function Home() {
       {invited && <Pressable onPress={() => router.push(`/campaign/${invited.id}`)}><Card style={styles.invite}><View style={styles.inviteIcon}><Ionicons name="sparkles" color={C.gold} size={21} /></View><View style={{ flex: 1 }}><Text style={styles.inviteTop}>NEW INVITATION</Text><Text style={styles.inviteTitle}>{invited.brand}: {invited.title}</Text><Text style={styles.inviteCopy}>Earn £{invited.pay.toFixed(0)} · Starts {invited.start}</Text></View><Ionicons name="chevron-forward" color={C.muted} size={20} /></Card></Pressable>}
 
       {!driver?.verified && <><Text style={styles.section}>NEXT ACTION</Text><Card><Text style={styles.actionTitle}>Complete your vehicle profile</Text><Text style={styles.actionCopy}>Add your vehicle details and photos so the Carprise team can review your eligibility.</Text><Pressable onPress={() => router.push('/(tabs)/vehicle')} style={styles.actionButton}><Text style={styles.actionButtonText}>Complete vehicle profile</Text></Pressable></Card></>}
+
+      <Text style={styles.section}>HOW CARPRISE WORKS</Text>
+      <Card>
+        <Text style={styles.actionTitle}>You drive. We commercialise the journey.</Text>
+        <Text style={styles.actionCopy}>
+          Fares stay with your mobility platform. Carprise adds campaigns, samples and cashless retail in-vehicle — then shares the value with you. Passengers join via your vehicle QR / journey code.
+        </Text>
+      </Card>
     </ScrollView>
   );
 }

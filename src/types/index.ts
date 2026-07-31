@@ -1,4 +1,5 @@
 export type CampaignStatus = 'invited' | 'accepted' | 'active' | 'review' | 'complete' | 'completed' | 'declined';
+export type UserRole = 'driver' | 'brand' | 'admin' | 'fleet';
 
 export type CampaignTask = {
   label: string;
@@ -18,6 +19,8 @@ export type Campaign = {
   area: string;
   progress: number;
   tasks: CampaignTask[];
+  campaignType?: string;
+  description?: string;
 };
 
 export type Driver = {
@@ -31,6 +34,9 @@ export type Driver = {
   vehicle: string;
   plate: string;
   verified: boolean;
+  onboardingComplete?: boolean;
+  bankSortCode?: string;
+  bankAccountLast4?: string;
 };
 
 export type Vehicle = {
@@ -41,4 +47,23 @@ export type Vehicle = {
   colour: string;
   registration: string;
   verificationStatus: string;
+  journeyCode?: string;
+  hardwareStatus?: string;
+  city?: string;
+};
+
+export type DriverDocument = {
+  id: string;
+  label: string;
+  status: 'missing' | 'uploaded' | 'approved' | 'rejected';
+  updatedAt?: string;
+};
+
+export type LedgerEntry = {
+  id: string;
+  amount: number;
+  entryType: string;
+  description: string;
+  status: string;
+  createdAt: string;
 };

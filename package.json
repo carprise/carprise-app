@@ -1,13 +1,19 @@
 {
-  "name": "carprise-driver",
-  "version": "1.0.0",
-  "main": "expo-router/entry",
+  "name": "carprise",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Carprise mobility commerce platform — driver app + multi-role web platform",
   "scripts": {
     "start": "expo start",
+    "driver": "expo start",
     "ios": "expo start --ios",
     "android": "expo start --android",
     "web": "expo start --web",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "platform": "npm --prefix platform run dev",
+    "platform:build": "npm --prefix platform run build",
+    "platform:start": "npm --prefix platform run start",
+    "dev:all": "echo Run 'npm start' for driver and 'npm run platform' for web in two terminals"
   },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.6",
@@ -36,6 +42,5 @@
   "devDependencies": {
     "@types/react": "~19.2.2",
     "typescript": "~6.0.3"
-  },
-  "private": true
+  }
 }
