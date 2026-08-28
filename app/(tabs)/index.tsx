@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +18,8 @@ export default function TodayScreen() {
     setTrackingEnabled,
     refreshing,
     refresh,
+    cabinRequests,
+    resolveCabinRequest,
   } = useApp();
   const active = campaigns.find(
     c => c.status === 'active' || c.status === 'accepted' || c.status === 'review',
@@ -25,6 +28,14 @@ export default function TodayScreen() {
   const firstName = driver?.firstName || driver?.name || 'Driver';
   const report = dailyReport ?? getDailyReport(driver?.id);
   const live = report.source === 'live';
+  const [resolving, setResolving] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      void refresh();
+    }, 20000);
+    return () => clearInterval(id);
+  }, [refresh]);
 
   return (
     <ScrollView
@@ -97,6 +108,34 @@ export default function TodayScreen() {
         <Text style={styles.inlineLink}>Full routes report →</Text>
       </Pressable>
 
+      {cabinRequests.length > 0 ? (
+        <>
+          <Text style={styles.section}>Cabin requests</Text>
+          {cabinRequests.map((item) => (
+            <Card key={item.id} style={styles.invite}>
+              <View style={styles.inviteIcon}>
+                <Ionicons name="chatbubble-outline" size={18} color={C.paper} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.inviteLabel}>{item.kind}</Text>
+                <Text style={styles.inviteTitle}>{item.title}</Text>
+                {item.body ? <Text style={styles.inviteMeta}>{item.body}</Text> : null}
+              </View>
+              <Pressable
+                onPress={async () => {
+                  setResolving(item.id);
+                  await resolveCabinRequest(item.id);
+                  setResolving(null);
+                }}
+                style={styles.smallBtn}
+              >
+                <Text style={styles.smallBtnText}>{resolving === item.id ? '…' : 'Done'}</Text>
+              </Pressable>
+            </Card>
+          ))}
+        </>
+      ) : null}
+
       <Text style={styles.section}>Active work</Text>
       {active ? (
         <Pressable onPress={() => router.push(`/campaign/${active.id}`)}>
@@ -164,8 +203,8 @@ export default function TodayScreen() {
       </Card>
 
       <Text style={styles.footerNote}>
-        This is the driver operations app: work, stock, routes and earnings. Passengers use a separate
-        experience at /j/[code] for ordering, personalisation and cabin controls.
+        This is the driver operations app. Passengers use /j/[code] for drink, shop, listen, ask and
+        ride. Ask and cabin requests appear above when the vehicle is live.
       </Text>
     </ScrollView>
   );

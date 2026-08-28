@@ -59,6 +59,15 @@ export type DriverDocument = {
   updatedAt?: string;
 };
 
+export type CabinRequest = {
+  id: string;
+  kind: 'ask' | 'listen' | 'ride' | 'drink' | 'shop' | string;
+  title: string;
+  body: string;
+  status: 'open' | 'done' | string;
+  created_at: string;
+};
+
 export type LedgerEntry = {
   id: string;
   amount: number;

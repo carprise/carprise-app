@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { AUTH_REDIRECT_URL, supabase, withTimeout } from '@/src/lib/supabase';
-import type { Campaign, CampaignStatus, Driver, Vehicle } from '@/src/types';
+import type { CabinRequest, Campaign, CampaignStatus, Driver, Vehicle } from '@/src/types';
 import { fetchDailyReport, type DailyReport } from '@/src/data/dailyReport';
 import { fetchVehicleStock, type StockItem, type StockSnapshot } from '@/src/data/stock';
 import {
@@ -43,6 +43,8 @@ type Ctx = {
   setCampaignProgress: (assignmentId: string, progress: number) => Promise<string | null>;
   uploadVehiclePhoto: (uri: string, fileName?: string) => Promise<string | null>;
   uploadEvidence: (assignmentId: string, uri: string, fileName?: string) => Promise<string | null>;
+  cabinRequests: CabinRequest[];
+  resolveCabinRequest: (id: string) => Promise<string | null>;
 };
 
 const Context = createContext<Ctx | null>(null);
@@ -59,6 +61,34 @@ const emptyDriver = (session: Session): Driver => ({
   plate: 'NOT SET',
   verified: false,
 });
+
+async function fetchCabinRequests(session: Session, vehicleId?: string): Promise<CabinRequest[]> {
+  const api = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '');
+  if (api) {
+    try {
+      const res = await fetch(`${api}/drive/cabin-requests`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (res.ok) {
+        const json = (await res.json()) as { requests?: CabinRequest[] };
+        if (Array.isArray(json.requests)) return json.requests;
+      }
+    } catch {
+      /* fall through to supabase */
+    }
+  }
+  if (supabase && vehicleId) {
+    const { data, error } = await supabase
+      .from('passenger_requests')
+      .select('id, kind, title, body, status, created_at')
+      .eq('vehicle_id', vehicleId)
+      .eq('status', 'open')
+      .order('created_at', { ascending: false })
+      .limit(30);
+    if (!error && data) return data as CabinRequest[];
+  }
+  return [];
+}
 
 const formatDate = (date?: string | null) => {
   if (!date) return 'TBC';
@@ -133,6 +163,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [tracking, setTracking] = useState<TelemetryStatus>(getTelemetryStatus());
   const [trackingEnabled, setTrackingEnabled] = useState(true);
   const [notifications, setNotifications] = useState(true);
+  const [cabinRequests, setCabinRequests] = useState<CabinRequest[]>([]);
 
   const loadData = useCallback(async (activeSession: Session | null, showRefresh = false) => {
     if (!supabase || !activeSession) {
@@ -143,6 +174,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setStock([]);
       setStockSource('estimate');
       setStockUpdatedAt(null);
+      setCabinRequests([]);
       setLoading(false);
       return;
     }
@@ -214,14 +246,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       .reduce((s, c) => s + c.pay, 0);
     const vehicleId = vehicleRow?.id as string | undefined;
 
-    const [report, stockSnap] = await Promise.all([
+    const [report, stockSnap, cabin] = await Promise.all([
       fetchDailyReport(userId, { activePay }),
       fetchVehicleStock(vehicleId),
+      fetchCabinRequests(activeSession, vehicleId),
     ]);
     setDailyReport(report);
     setStock(stockSnap.items);
     setStockSource(stockSnap.source);
     setStockUpdatedAt(stockSnap.updatedAt ?? null);
+    setCabinRequests(cabin);
 
     setLoading(false);
     setRefreshing(false);
@@ -435,6 +469,34 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return upload('vehicle-photos', `${session.user.id}/${Date.now()}.${extension}`, uri);
   };
 
+  const resolveCabinRequest = async (id: string) => {
+    if (!session) return 'You are not signed in.';
+    const api = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '');
+    if (api) {
+      try {
+        const res = await fetch(`${api}/drive/cabin-requests`, {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }),
+        });
+        if (!res.ok) {
+          const json = await res.json().catch(() => ({}));
+          return (json as { error?: string }).error || 'Could not mark as done.';
+        }
+      } catch {
+        return 'Could not reach the cabin inbox.';
+      }
+    }
+    if (supabase) {
+      await supabase.from('passenger_requests').update({ status: 'done' }).eq('id', id);
+    }
+    setCabinRequests((prev) => prev.filter((item) => item.id !== id));
+    return null;
+  };
+
   const uploadEvidence = async (assignmentId: string, uri: string, fileName = 'evidence.jpg') => {
     if (!supabase || !session) return 'You are not signed in.';
     const extension = fileName.split('.').pop() || 'jpg';
@@ -486,6 +548,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     uploadVehiclePhoto,
     uploadEvidence,
+    cabinRequests,
+    resolveCabinRequest,
   }), [
     session,
     loading,
@@ -500,6 +564,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     tracking,
     trackingEnabled,
     notifications,
+    cabinRequests,
     loadData,
   ]);
 
