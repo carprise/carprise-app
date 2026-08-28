@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { AUTH_REDIRECT_URL, supabase } from '@/src/lib/supabase';
+import { AUTH_REDIRECT_URL, supabase, withTimeout } from '@/src/lib/supabase';
 import type { Campaign, CampaignStatus, Driver, Vehicle } from '@/src/types';
 import { fetchDailyReport, type DailyReport } from '@/src/data/dailyReport';
 import { fetchVehicleStock, type StockItem, type StockSnapshot } from '@/src/data/stock';
@@ -74,7 +74,7 @@ function formatAuthError(error: unknown, fallback: string): string {
     raw = error.trim();
   } else if (typeof error === 'object') {
     const e = error as Record<string, unknown>;
-    const candidates = [e.message, e.msg, e.error_description, e.error, e.code];
+    const candidates = [e.message, e.msg, e.error_description, e.error, e.code, e.name];
     for (const value of candidates) {
       if (typeof value === 'string' && value.trim()) {
         raw = value.trim();
@@ -91,9 +91,12 @@ function formatAuthError(error: unknown, fallback: string): string {
     lower.includes('failed to fetch') ||
     lower.includes('network request failed') ||
     lower.includes('networkerror') ||
-    lower.includes('load failed')
+    lower.includes('load failed') ||
+    lower.includes('timeout') ||
+    lower.includes('timed out') ||
+    lower.includes('aborted')
   ) {
-    return 'Cannot reach the Carprise login service. Check your internet connection. If this keeps happening, the backend may be paused or removed.';
+    return 'Cannot reach the Carprise login service yet. The backend may still be starting after a restore. Wait a minute and try again.';
   }
   if (lower.includes('sending confirmation email') || lower.includes('error sending')) {
     return 'Account could not be created because the confirmation email failed to send. Check Supabase SMTP (Resend: username must be "resend", domain verified, sender support@carprise.co.uk), or temporarily turn off "Confirm email" in Supabase Auth for the pilot.';
@@ -230,10 +233,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      loadData(data.session);
-    });
+    withTimeout(supabase.auth.getSession())
+      .then(({ data }) => {
+        setSession(data.session);
+        loadData(data.session);
+      })
+      .catch(() => {
+        setSession(null);
+        setLoading(false);
+      });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
@@ -274,14 +282,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // Confirmation emails must redirect to the live driver app, not localhost.
     // Also set Site URL + Redirect URLs in Supabase Auth settings to match.
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          data: { first_name: firstName.trim(), last_name: lastName.trim() },
-          emailRedirectTo: AUTH_REDIRECT_URL,
-        },
-      });
+      const { data, error } = await withTimeout(
+        supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: {
+            data: { first_name: firstName.trim(), last_name: lastName.trim() },
+            emailRedirectTo: AUTH_REDIRECT_URL,
+          },
+        }),
+      );
 
       if (error) {
         return {
@@ -320,7 +330,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     if (!supabase) return 'Supabase is not configured.';
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      const { error } = await withTimeout(
+        supabase.auth.signInWithPassword({ email: email.trim(), password }),
+      );
       if (!error) return null;
       return formatAuthError(error, 'Could not sign in. Check your email and password.');
     } catch (err) {

@@ -42,35 +42,48 @@ export default function AuthScreen() {
     }
     setSubmitting(true);
     setNotice('');
-
-    if (mode === 'login') {
-      const error = await signIn(email, password);
+    let cancelled = false;
+    const watchdog = setTimeout(() => {
+      cancelled = true;
       setSubmitting(false);
-      if (error) {
-        showMessage(error);
+      showMessage(
+        'Cannot reach the Carprise login service yet. The backend may still be starting after a restore. Wait a minute and try again.',
+      );
+    }, 14000);
+
+    try {
+      if (mode === 'login') {
+        const error = await signIn(email, password);
+        if (cancelled) return;
+        if (error) {
+          showMessage(error);
+          return;
+        }
+        router.replace('/(tabs)');
         return;
       }
-      router.replace('/(tabs)');
-      return;
-    }
 
-    const result = await signUp(email, password, firstName, lastName);
-    setSubmitting(false);
-    if (result.error) {
-      showMessage(result.error);
-      return;
-    }
-    if (result.signedIn) {
-      setNotice('Account created successfully. Opening your driver dashboard...');
-      router.replace('/(tabs)');
-      return;
-    }
+      const result = await signUp(email, password, firstName, lastName);
+      if (cancelled) return;
+      if (result.error) {
+        showMessage(result.error);
+        return;
+      }
+      if (result.signedIn) {
+        setNotice('Account created successfully. Opening your driver dashboard...');
+        router.replace('/(tabs)');
+        return;
+      }
 
-    setNotice(
-      'Your account has been created. Check your inbox for a confirmation email from support@carprise.co.uk, then return here and sign in.',
-    );
-    setMode('login');
-    setPassword('');
+      setNotice(
+        'Your account has been created. Check your inbox for a confirmation email from support@carprise.co.uk, then return here and sign in.',
+      );
+      setMode('login');
+      setPassword('');
+    } finally {
+      clearTimeout(watchdog);
+      if (!cancelled) setSubmitting(false);
+    }
   };
 
   return (
