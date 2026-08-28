@@ -46,7 +46,7 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: C.bg },
-  logo: { width: 260, height: 110 },
+  logo: { width: 260, height: 54 },
   copy: {
     color: C.champagne,
     fontWeight: '700',

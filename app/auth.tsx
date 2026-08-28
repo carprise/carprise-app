@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     paddingBottom: 48,
     justifyContent: 'center',
   },
-  logo: { width: 168, height: 64, marginBottom: 28 },
+  logo: { width: 210, height: 44, marginBottom: 28 },
   kicker: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 18 },
   eyebrow: {
     color: 'rgba(255,255,255,0.72)',

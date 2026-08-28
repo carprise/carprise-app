@@ -87,6 +87,14 @@ function formatAuthError(error: unknown, fallback: string): string {
 
   // Map common Supabase / SMTP failures to actionable copy
   const lower = raw.toLowerCase();
+  if (
+    lower.includes('failed to fetch') ||
+    lower.includes('network request failed') ||
+    lower.includes('networkerror') ||
+    lower.includes('load failed')
+  ) {
+    return 'Cannot reach the Carprise login service. Check your internet connection. If this keeps happening, the backend may be paused or removed.';
+  }
   if (lower.includes('sending confirmation email') || lower.includes('error sending')) {
     return 'Account could not be created because the confirmation email failed to send. Check Supabase SMTP (Resend: username must be "resend", domain verified, sender support@carprise.co.uk), or temporarily turn off "Confirm email" in Supabase Auth for the pilot.';
   }
