@@ -38,6 +38,11 @@ export const C = {
   inkMuted: '#6f6b64',
 };
 
+export const Font = {
+  family: 'Inter',
+  web: 'Inter, ui-sans-serif, system-ui, sans-serif',
+};
+
 export const R = {
   sm: 6,
   md: 10,

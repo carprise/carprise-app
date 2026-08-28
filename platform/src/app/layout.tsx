@@ -1,5 +1,11 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
+
+const inter = Inter({
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Carprise — Commercializing Mobility',
@@ -13,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-GB">
-      <body className="min-h-screen bg-ink antialiased">{children}</body>
+    <html lang="en-GB" className={inter.className}>
+      <body className={`${inter.className} min-h-screen bg-ink antialiased`}>{children}</body>
     </html>
   );
 }

@@ -12,6 +12,12 @@ export default function Root({ children }: PropsWithChildren) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <ScrollViewStyleReset />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+          rel="stylesheet"
+        />
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
       </head>
       <body>{children}</body>
@@ -25,8 +31,13 @@ html, body, #root {
   margin: 0;
   background-color: #ece5dc;
   color: #08090b;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+html, body, #root, #root * {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif !important;
 }
 body {
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 `;

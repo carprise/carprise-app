@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 import { C, R } from '@/src/constants/theme';
+import { FONT_FAMILY } from '@/src/lib/fonts';
 import type { CampaignStatus } from '@/src/types';
 
 export function ScreenTitle({
@@ -120,6 +121,7 @@ export function MetricTile({
 const s = StyleSheet.create({
   head: { gap: 10, marginBottom: 26 },
   eyebrow: {
+    fontFamily: FONT_FAMILY,
     color: C.champagne,
     fontSize: 11,
     fontWeight: '600',
@@ -127,6 +129,7 @@ const s = StyleSheet.create({
     textTransform: 'uppercase',
   },
   title: {
+    fontFamily: FONT_FAMILY,
     color: C.paper,
     fontSize: 30,
     lineHeight: 34,
@@ -134,6 +137,7 @@ const s = StyleSheet.create({
     letterSpacing: -0.8,
   },
   copy: {
+    fontFamily: FONT_FAMILY,
     color: C.muted,
     fontSize: 15,
     lineHeight: 23,
@@ -154,6 +158,7 @@ const s = StyleSheet.create({
     paddingVertical: 5,
   },
   pillText: {
+    fontFamily: FONT_FAMILY,
     fontSize: 10,
     fontWeight: '600',
     letterSpacing: 0.6,
@@ -174,6 +179,7 @@ const s = StyleSheet.create({
     borderColor: C.paper,
   },
   buttonPrimaryText: {
+    fontFamily: FONT_FAMILY,
     color: C.ink,
     fontSize: 13,
     fontWeight: '600',
@@ -184,6 +190,7 @@ const s = StyleSheet.create({
     borderColor: C.lineStrong,
   },
   buttonGhostText: {
+    fontFamily: FONT_FAMILY,
     color: C.paper,
     fontSize: 13,
     fontWeight: '600',
@@ -209,6 +216,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 14,
   },
   metricLabel: {
+    fontFamily: FONT_FAMILY,
     color: C.muted2,
     fontSize: 10,
     fontWeight: '600',
@@ -216,6 +224,7 @@ const s = StyleSheet.create({
     textTransform: 'uppercase',
   },
   metricValue: {
+    fontFamily: FONT_FAMILY,
     color: C.paper,
     fontSize: 22,
     fontWeight: '400',
@@ -223,6 +232,7 @@ const s = StyleSheet.create({
     marginTop: 8,
   },
   metricHint: {
+    fontFamily: FONT_FAMILY,
     color: C.muted,
     fontSize: 11,
     marginTop: 6,
