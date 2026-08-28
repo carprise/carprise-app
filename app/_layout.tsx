@@ -6,7 +6,7 @@ import { C } from '@/src/constants/theme';
 export default function Root() {
   return (
     <AppProvider>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <Stack
         screenOptions={{
           headerShown: false,

@@ -26,9 +26,11 @@ export default function AuthScreen() {
   const [lastName, setLastName] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState('');
+  const [noticeTone, setNoticeTone] = useState<'error' | 'info'>('error');
 
-  const showMessage = (message: string, useAlert = false) => {
+  const showMessage = (message: string, useAlert = false, tone: 'error' | 'info' = 'error') => {
     setNotice(message);
+    setNoticeTone(tone);
     // Alert.alert is unreliable on web and can show "{}" for empty/object messages.
     if (useAlert && Platform.OS !== 'web') {
       Alert.alert(mode === 'login' ? 'Sign in' : 'Create account', message);
@@ -70,13 +72,15 @@ export default function AuthScreen() {
         return;
       }
       if (result.signedIn) {
-        setNotice('Account created successfully. Opening your driver dashboard...');
+        showMessage('Account created successfully. Opening your driver dashboard...', false, 'info');
         router.replace('/(tabs)');
         return;
       }
 
-      setNotice(
+      showMessage(
         'Your account has been created. Check your inbox for a confirmation email from support@carprise.co.uk, then return here and sign in.',
+        false,
+        'info',
       );
       setMode('login');
       setPassword('');
@@ -157,7 +161,7 @@ export default function AuthScreen() {
           />
 
           {notice ? (
-            <View style={styles.notice}>
+            <View style={[styles.notice, noticeTone === 'info' ? styles.noticeInfo : styles.noticeError]}>
               <Text style={styles.noticeText}>{notice}</Text>
             </View>
           ) : null}
@@ -199,7 +203,7 @@ const styles = StyleSheet.create({
   logo: { width: 210, height: 44, marginBottom: 28 },
   kicker: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 18 },
   eyebrow: {
-    color: 'rgba(255,255,255,0.72)',
+    color: C.muted,
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 2.2,
@@ -244,10 +248,16 @@ const styles = StyleSheet.create({
   notice: {
     marginTop: 18,
     borderWidth: 1,
-    borderColor: C.champagne + '66',
-    backgroundColor: 'rgba(232,203,161,0.08)',
     borderRadius: R.md,
     padding: 14,
+  },
+  noticeError: {
+    borderColor: C.danger,
+    backgroundColor: 'rgba(143, 61, 61, 0.08)',
+  },
+  noticeInfo: {
+    borderColor: C.lineStrong,
+    backgroundColor: C.panel,
   },
   noticeText: { color: C.paper, fontSize: 13, lineHeight: 19 },
   actions: { marginTop: 22 },

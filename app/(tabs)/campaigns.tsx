@@ -12,7 +12,7 @@ export default function Campaigns() {
     <ScrollView
       style={styles.screen}
       contentContainerStyle={styles.page}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.champagne} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.paper} />}
     >
       <ScreenTitle
         eyebrow="Commercial work"
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   page: { flexGrow: 1, padding: 20, paddingTop: 62, paddingBottom: 120, gap: 14, backgroundColor: C.bg },
   card: { padding: 20 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  pay: { color: C.champagne, fontSize: 18, fontWeight: '600', letterSpacing: -0.3 },
+  pay: { color: C.paper, fontSize: 18, fontWeight: '600', letterSpacing: -0.3 },
   brand: {
     color: C.champagne,
     fontSize: 10,

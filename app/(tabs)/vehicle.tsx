@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   plate: {
-    color: C.champagne,
+    color: C.paper,
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 2.5,
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   },
   qrUrl: { color: C.muted2, fontSize: 11, marginTop: 6 },
   qrLinkBtn: { marginTop: 14 },
-  qrLinkText: { color: C.champagne, fontSize: 13, fontWeight: '600' },
+  qrLinkText: { color: C.paper, fontSize: 13, fontWeight: '600' },
   row: { flexDirection: 'row', gap: 10 },
   field: { flex: 1, marginBottom: 14 },
   label: {

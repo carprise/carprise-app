@@ -13,7 +13,7 @@ export default function StockScreen() {
       style={styles.screen}
       contentContainerStyle={styles.page}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.champagne} />
+        <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.paper} />
       }
     >
       <ScreenTitle
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderWidth: 1,
   },
-  sourceLive: { borderColor: 'rgba(168,217,106,0.35)', backgroundColor: 'rgba(168,217,106,0.1)' },
+  sourceLive: { borderColor: C.liveBorder, backgroundColor: C.liveFill },
   sourceEst: { borderColor: C.line, backgroundColor: C.panel2 },
   sourceText: { color: C.muted, fontSize: 10, fontWeight: '600' },
   summaryValue: {
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   sku: { color: C.muted2, fontSize: 12, marginTop: 4 },
   qtyWrap: { alignItems: 'flex-end' },
   qty: { color: C.paper, fontSize: 28, fontWeight: '300', letterSpacing: -0.8 },
-  qtyLow: { color: C.champagne },
+  qtyLow: { color: C.warning },
   qtyLabel: { color: C.muted2, fontSize: 11, marginTop: 2 },
   note: { color: C.muted2, fontSize: 12, lineHeight: 18, marginTop: 12 },
 });

@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   copy: { color: C.muted, fontSize: 15, lineHeight: 23 },
   dots: { flexDirection: 'row', gap: 8, marginTop: 4 },
   dot: { width: 8, height: 2, backgroundColor: C.lineStrong },
-  dotActive: { width: 28, backgroundColor: C.champagne },
+  dotActive: { width: 28, backgroundColor: C.paper },
   stepMeta: {
     color: C.violet,
     fontSize: 10,
@@ -309,6 +309,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   skip: { alignItems: 'center', paddingVertical: 10 },
-  skipText: { color: C.champagne, fontWeight: '700', fontSize: 12 },
+  skipText: { color: C.paper, fontWeight: '700', fontSize: 12 },
   skipMuted: { color: C.muted2, fontWeight: '600', fontSize: 12 },
 });

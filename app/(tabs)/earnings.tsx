@@ -59,7 +59,7 @@ export default function Earnings() {
             await refresh();
             await loadLedger();
           }}
-          tintColor={C.champagne}
+          tintColor={C.paper}
         />
       }
     >
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   amount: {
-    color: C.champagne,
+    color: C.paper,
     fontSize: 40,
     fontWeight: '300',
     letterSpacing: -1,
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   row: { gap: 4 },
   rowTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  pay: { color: C.champagne, fontSize: 18, fontWeight: '500' },
+  pay: { color: C.paper, fontSize: 18, fontWeight: '500' },
   rowTitle: { color: C.paper, fontSize: 15, fontWeight: '500', marginTop: 8 },
   footer: { color: C.muted2, fontSize: 12, lineHeight: 18, marginTop: 10 },
 });

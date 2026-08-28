@@ -2,8 +2,7 @@ import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 
 /**
- * Web document shell — keeps the page background dark so short screens
- * do not flash a white body below the app content.
+ * Web document shell — cream page so short screens do not flash a dark body.
  */
 export default function Root({ children }: PropsWithChildren) {
   return (
@@ -24,8 +23,8 @@ const responsiveBackground = `
 html, body, #root {
   height: 100%;
   margin: 0;
-  background-color: #08090B;
-  color: #F3F0E8;
+  background-color: #ece5dc;
+  color: #08090b;
 }
 body {
   overflow: hidden;

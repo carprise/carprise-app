@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderWidth: 1,
   },
-  sourceLive: { borderColor: 'rgba(168,217,106,0.35)', backgroundColor: 'rgba(168,217,106,0.1)' },
+  sourceLive: { borderColor: C.liveBorder, backgroundColor: C.liveFill },
   sourceEst: { borderColor: C.line, backgroundColor: C.panel2 },
   sourceText: { color: C.muted, fontSize: 10, fontWeight: '600' },
   heroValue: {
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
   trackBtnText: { color: C.paper, fontSize: 12, fontWeight: '600' },
   trackError: { color: C.danger, fontSize: 12, lineHeight: 17 },
-  refreshLink: { color: C.champagne, fontSize: 13, fontWeight: '600' },
+  refreshLink: { color: C.paper, fontSize: 13, fontWeight: '600' },
   metrics: { flexDirection: 'row', gap: 10 },
   section: {
     color: C.muted2,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   rowMeta: { color: C.muted, fontSize: 13, lineHeight: 19, marginTop: 8 },
   bigMoney: {
-    color: C.champagne,
+    color: C.paper,
     fontSize: 32,
     fontWeight: '300',
     letterSpacing: -0.8,

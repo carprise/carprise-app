@@ -39,7 +39,7 @@ export default function Index() {
       <Image source={require('@/assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.copy}>DRIVER NETWORK</Text>
       <View style={styles.line} />
-      {(loading || routing) && <ActivityIndicator color={C.champagne} style={styles.loader} />}
+      {(loading || routing) && <ActivityIndicator color={C.paper} style={styles.loader} />}
     </LinearGradient>
   );
 }
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: C.bg },
   logo: { width: 260, height: 54 },
   copy: {
-    color: C.champagne,
+    color: C.muted,
     fontWeight: '700',
     fontSize: 10,
     letterSpacing: 3.5,
@@ -57,11 +57,8 @@ const styles = StyleSheet.create({
   line: {
     width: 48,
     height: 1,
-    backgroundColor: C.violet,
+    backgroundColor: C.paper,
     marginTop: 22,
-    shadowColor: C.violet,
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
   },
   loader: { marginTop: 28 },
 });

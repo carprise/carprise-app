@@ -20,6 +20,18 @@ for (const item of fs.readdirSync(dist)) {
   fs.renameSync(path.join(dist, item), path.join(nested, item));
 }
 
+const nestedIndex = path.join(nested, 'index.html');
+if (fs.existsSync(nestedIndex)) {
+  let html = fs.readFileSync(nestedIndex, 'utf8');
+  if (!html.includes('background-color: #ece5dc')) {
+    html = html.replace(
+      'html,\n      body {\n        height: 100%;\n      }',
+      'html,\n      body {\n        height: 100%;\n        background-color: #ece5dc;\n        color: #08090b;\n      }',
+    );
+    fs.writeFileSync(nestedIndex, html);
+  }
+}
+
 fs.writeFileSync(
   path.join(dist, 'index.html'),
   `<!DOCTYPE html>

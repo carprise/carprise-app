@@ -178,8 +178,8 @@ export default function Profile() {
         <Switch
           value={notifications}
           onValueChange={setNotifications}
-          trackColor={{ true: C.violet, false: C.panel3 }}
-          thumbColor={C.paper}
+          trackColor={{ true: C.paper, false: C.panel3 }}
+          thumbColor={C.ink}
         />
       </Card>
 

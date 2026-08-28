@@ -21,7 +21,7 @@ export default function TabsLayout() {
           paddingTop: 8,
           paddingBottom: 14,
         },
-        tabBarActiveTintColor: C.champagne,
+        tabBarActiveTintColor: C.paper,
         tabBarInactiveTintColor: C.muted2,
         tabBarLabelStyle: {
           fontSize: 10,

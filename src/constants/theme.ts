@@ -1,38 +1,41 @@
 /**
- * Driver / B2B app theme
- * Premium mobility instrument panel — not budget consumer UI.
- * Aligned with carprise.co.uk tokens, refined for operational use.
+ * Driver app theme — same Swiss cream / ink system as carprise.co.uk.
+ * Champagne and violet stay off the operational UI; lime is not used.
  */
 export const C = {
-  bg: '#060708',
-  bgSoft: '#0A0B0E',
-  panel: '#0E1014',
-  panel2: '#14171D',
-  panel3: '#1C2028',
-  elevated: '#12151C',
+  bg: '#ece5dc',
+  bgSoft: '#e6dfd5',
+  panel: '#f5efe6',
+  panel2: '#faf6f0',
+  panel3: '#ddd6cc',
+  elevated: '#f7f1e8',
 
-  paper: '#F2EDE4',
-  text: '#F2EDE4',
-  muted: '#9A9DA5',
-  muted2: '#6E727A',
-  placeholder: '#5C6068',
+  /** Primary foreground. Named paper for historical reasons: most screens use C.paper as text. */
+  paper: '#08090b',
+  text: '#08090b',
+  muted: '#6f6b64',
+  muted2: '#8a857c',
+  placeholder: '#9a958c',
 
-  champagne: '#D4B896',
-  gold: '#D4B896',
-  gold2: '#B8956A',
-  violet: '#7B6CF0',
-  acid: '#A8D96A',
+  champagne: '#6f6b64',
+  gold: '#6f6b64',
+  gold2: '#4f4c47',
+  violet: '#08090b',
+  acid: '#4d7a3e',
 
-  line: 'rgba(255,255,255,0.08)',
-  lineStrong: 'rgba(255,255,255,0.14)',
-  hairline: 'rgba(212,184,150,0.22)',
+  line: 'rgba(8, 9, 11, 0.14)',
+  lineStrong: 'rgba(8, 9, 11, 0.22)',
+  hairline: 'rgba(8, 9, 11, 0.16)',
+  liveBorder: 'rgba(77, 122, 62, 0.35)',
+  liveFill: 'rgba(77, 122, 62, 0.10)',
 
-  success: '#A8D96A',
-  warning: '#D4B896',
-  danger: '#D97A7A',
+  success: '#4d7a3e',
+  warning: '#8a6a32',
+  danger: '#8f3d3d',
 
-  ink: '#060708',
-  inkMuted: '#5A5750',
+  /** Cream on ink-filled controls (primary buttons). */
+  ink: '#ece5dc',
+  inkMuted: '#6f6b64',
 };
 
 export const R = {

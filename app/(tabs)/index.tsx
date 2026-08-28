@@ -31,7 +31,7 @@ export default function TodayScreen() {
       style={styles.screen}
       contentContainerStyle={styles.page}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.champagne} />
+        <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.paper} />
       }
     >
       <View style={styles.top}>
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderWidth: 1,
   },
-  sourceLive: { borderColor: 'rgba(168,217,106,0.35)', backgroundColor: 'rgba(168,217,106,0.1)' },
+  sourceLive: { borderColor: C.liveBorder, backgroundColor: C.liveFill },
   sourceEst: { borderColor: C.line, backgroundColor: C.panel },
   sourceText: { color: C.muted, fontSize: 10, fontWeight: '600', letterSpacing: 0.6 },
   metrics: { flexDirection: 'row', gap: 10 },
@@ -259,16 +259,16 @@ const styles = StyleSheet.create({
     padding: 2,
     justifyContent: 'center',
   },
-  toggleOn: { backgroundColor: 'rgba(212,184,150,0.25)', borderColor: C.hairline },
+  toggleOn: { backgroundColor: 'rgba(8, 9, 11, 0.12)', borderColor: C.paper },
   toggleKnob: {
     width: 20,
     height: 20,
     borderRadius: 10,
     backgroundColor: C.muted2,
   },
-  toggleKnobOn: { backgroundColor: C.champagne, alignSelf: 'flex-end' },
+  toggleKnobOn: { backgroundColor: C.paper, alignSelf: 'flex-end' },
   inlineLink: {
-    color: C.champagne,
+    color: C.paper,
     fontSize: 13,
     fontWeight: '600',
     marginTop: 4,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   },
   workCard: { gap: 4 },
   workTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  workPay: { color: C.champagne, fontSize: 18, fontWeight: '500' },
+  workPay: { color: C.paper, fontSize: 18, fontWeight: '500' },
   workBrand: {
     color: C.champagne,
     fontSize: 11,
